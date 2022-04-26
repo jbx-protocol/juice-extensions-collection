@@ -15,6 +15,7 @@ contract TestNFTPayDelegate is TestBaseWorkflow {
   JBFundingCycleData _data;
   JBFundingCycleMetadata _metadata;
   JBGroupedSplits[] _groupedSplits;
+  IJBPaymentTerminal[] _terminals;
   JBFundAccessConstraints[] _fundAccessConstraints;
   JBTokenStore _tokenStore;
   address _projectOwner;
@@ -52,14 +53,16 @@ contract TestNFTPayDelegate is TestBaseWorkflow {
       pausePay: false,
       pauseDistributions: false,
       pauseRedeem: false,
-      pauseMint: false,
       pauseBurn: false,
-      allowChangeToken: false,
+      allowMinting: true,
+      allowChangeToken: true,
       allowTerminalMigration: false,
       allowControllerMigration: false,
+      allowSetTerminals: false,
+      allowSetController: false,
       holdFees: false,
-      useLocalBalanceForRedemptions: false,
-      useDataSourceForPay: true,
+      useTotalOverflowForRedemptions: false,
+      useDataSourceForPay: false,
       useDataSourceForRedeem: false,
       dataSource: dataSource
     });
@@ -72,9 +75,12 @@ contract TestNFTPayDelegate is TestBaseWorkflow {
 
     JBETHPaymentTerminal terminal = jbETHPaymentTerminal();
 
+    _terminals.push(terminal);
+
     _fundAccessConstraints.push(
       JBFundAccessConstraints({
         terminal: jbETHPaymentTerminal(),
+        token: jbLibraries().ETHToken(),
         distributionLimit: 10 ether,
         overflowAllowance: 5 ether,
         distributionLimitCurrency: 1, // Currency = ETH
@@ -90,10 +96,20 @@ contract TestNFTPayDelegate is TestBaseWorkflow {
       block.timestamp,
       _groupedSplits,
       _fundAccessConstraints,
-      terminal
+      _terminals,
+      ''
     );
 
-    terminal.pay{value: 20 ether}(projectId, caller, 0, false, 'Forge test', new bytes(0));
+    terminal.pay{value: 20 ether}(
+      projectId,
+      20 ether,
+      address(0),
+      caller,
+      0,
+      false,
+      'Take my money',
+      new bytes(0)
+    );
 
     assertEq(NFTRewards(address(payDelegate)).balanceOf(caller), 1);
   }

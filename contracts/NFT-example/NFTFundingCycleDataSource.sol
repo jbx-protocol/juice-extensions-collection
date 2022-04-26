@@ -17,11 +17,10 @@ contract NFTFundingCycleDataSource is IJBFundingCycleDataSource {
     returns (
       uint256 weight,
       string memory memo,
-      IJBPayDelegate delegate,
-      bytes memory delegateMetadata
+      IJBPayDelegate delegate
     )
   {
-    return (_param.weight, _param.memo, NFTDelegate, new bytes(0));
+    return (_param.weight, _param.memo, NFTDelegate);
   }
 
   function redeemParams(JBRedeemParamsData calldata _param)
@@ -31,10 +30,16 @@ contract NFTFundingCycleDataSource is IJBFundingCycleDataSource {
     returns (
       uint256 reclaimAmount,
       string memory memo,
-      IJBRedemptionDelegate delegate,
-      bytes memory delegateMetadata
+      IJBRedemptionDelegate delegate
     )
   {
-    return (0, '', IJBRedemptionDelegate(address(0)), new bytes(0));
+    return (0, '', IJBRedemptionDelegate(address(0)));
+  }
+
+  function supportsInterface(bytes4 _interfaceId) external pure override returns (bool) {
+    return
+      _interfaceId == type(IJBFundingCycleDataSource).interfaceId ||
+      _interfaceId == type(IJBPayDelegate).interfaceId ||
+      _interfaceId == type(IJBRedemptionDelegate).interfaceId;
   }
 }
