@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
 
-import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
-import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol';
+import '@jbx-protocol-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
+import '@jbx-protocol-v2/contracts/interfaces/IJBPayDelegate.sol';
+import '@jbx-protocol-v2/contracts/interfaces/IJBRedemptionDelegate.sol';
 
-contract DataSourceDelegate is IJBFundingCycleDataSource, IJBPayDelegate {
+contract DataSourceDelegate is IJBFundingCycleDataSource, IJBPayDelegate, IJBRedemptionDelegate {
   function payParams(JBPayParamsData calldata _data)
     external
     view
@@ -32,6 +33,8 @@ contract DataSourceDelegate is IJBFundingCycleDataSource, IJBPayDelegate {
   }
 
   function didPay(JBDidPayData calldata _data) external override {}
+
+  function didRedeem(JBDidRedeemData calldata _data) external override {}
 
   function supportsInterface(bytes4 _interfaceId) external pure override returns (bool) {
     return
