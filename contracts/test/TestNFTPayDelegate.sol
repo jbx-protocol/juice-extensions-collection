@@ -31,7 +31,7 @@ contract TestNFTPayDelegate is TestBaseWorkflow {
   function setUp() public override {
     super.setUp();
 
-    payDelegate = new NFTRewards();
+    payDelegate = new NFTRewards(address(jbETHPaymentTerminal()));
 
     IJBFundingCycleDataSource dataSource = new NFTFundingCycleDataSource(payDelegate);
 
