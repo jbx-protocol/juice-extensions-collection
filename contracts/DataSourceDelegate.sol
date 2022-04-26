@@ -39,6 +39,7 @@ contract DataSourceDelegate is IJBFundingCycleDataSource, IJBPayDelegate, IJBRed
   function supportsInterface(bytes4 _interfaceId) external pure override returns (bool) {
     return
       _interfaceId == type(IJBFundingCycleDataSource).interfaceId ||
-      _interfaceId == type(IJBPayDelegate).interfaceId;
+      _interfaceId == type(IJBPayDelegate).interfaceId ||
+      _interfaceId == type(IJBRedemptionDelegate).interfaceId;
   }
 }
