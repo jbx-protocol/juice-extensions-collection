@@ -2,6 +2,10 @@
 pragma solidity 0.8.6;
 
 import '@jbx-protocol-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
+import '@jbx-protocol-v2/contracts/libraries/JBCurrencies.sol';
+import '@jbx-protocol-v2/contracts/libraries/JBTokens.sol';
+
+import '@openzeppelin/contracts/interfaces/IERC721.sol';
 
 contract NFTFundingCycleDataSource is IJBFundingCycleDataSource {
   IJBPayDelegate NFTDelegate;
@@ -33,7 +37,9 @@ contract NFTFundingCycleDataSource is IJBFundingCycleDataSource {
       IJBRedemptionDelegate delegate
     )
   {
-    return (0, '', IJBRedemptionDelegate(address(0)));
+    if (IERC721(address(NFTDelegate)).balanceOf(_param.holder) > 0)
+      return (_param.reclaimAmount.value, 'bye holder', IJBRedemptionDelegate(address(0)));
+    else return (0, 'no way', IJBRedemptionDelegate(address(0)));
   }
 
   function supportsInterface(bytes4 _interfaceId) external pure override returns (bool) {

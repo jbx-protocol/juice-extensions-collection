@@ -67,7 +67,7 @@ contract TestNFTPayDelegate is TestBaseWorkflow {
       holdFees: false,
       useTotalOverflowForRedemptions: false,
       useDataSourceForPay: true,
-      useDataSourceForRedeem: false,
+      useDataSourceForRedeem: true,
       dataSource: dataSource
     });
 
@@ -99,6 +99,7 @@ contract TestNFTPayDelegate is TestBaseWorkflow {
     );
   }
 
+  /// @notice will test the NFT minting triggered by a call to pay()
   function testMint() public {
     address caller = address(69420);
     evm.startPrank(caller);
@@ -116,5 +117,65 @@ contract TestNFTPayDelegate is TestBaseWorkflow {
     );
 
     assertEq(NFTRewards(address(payDelegate)).balanceOf(caller), 1);
+  }
+
+  /// @notice test the variable redeem weight if the caller is either an NFT holder or not
+  function testRedeem() public {
+    address callerOne = address(69420);
+    address callerTwo = address(42069);
+
+    // pay to the project, caller One will then receive the NFT (via the pay delegate)
+    evm.startPrank(callerOne);
+    evm.deal(callerOne, 100 ether);
+
+    _terminal.pay{value: 20 ether}(
+      _projectId,
+      20 ether,
+      address(0),
+      callerOne,
+      0,
+      false,
+      'Take my money',
+      new bytes(0)
+    );
+
+    // split the token received -> caller one has an NFT while caller two not
+    uint256 tokenBalance = jbTokenStore().balanceOf(callerOne, _projectId);
+    jbTokenStore().transferFrom(callerOne, _projectId, callerTwo, tokenBalance / 2);
+
+    uint256 balanceBeforeCallerOne = callerOne.balance;
+
+    _terminal.redeemTokensOf(
+      callerOne,
+      _projectId,
+      tokenBalance / 2,
+      jbLibraries().ETHToken(),
+      1,
+      payable(callerOne),
+      '',
+      '0x'
+    );
+
+    uint256 transferedCallerOne = callerOne.balance - balanceBeforeCallerOne;
+
+    evm.stopPrank();
+    evm.startPrank(callerTwo);
+    uint256 balanceBeforeCallerTwo = callerTwo.balance;
+
+    _terminal.redeemTokensOf(
+      callerTwo,
+      _projectId,
+      tokenBalance / 2,
+      jbLibraries().ETHToken(),
+      0,
+      payable(callerTwo),
+      '',
+      '0x'
+    );
+
+    uint256 transferedCallerTwo = callerTwo.balance - balanceBeforeCallerTwo;
+
+    // One should have received more eth than two
+    assertGt(transferedCallerOne, transferedCallerTwo);
   }
 }
