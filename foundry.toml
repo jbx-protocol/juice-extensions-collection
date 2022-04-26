@@ -7,10 +7,9 @@ remappings = [
     '@chainlink=lib/chainlink/',
     '@jbx-protocol-v2=lib/juice-contracts-v2',
     '@openzeppelin=lib/openzeppelin-contracts',
-    '@paulrberg=lib/contracts/',
+    '@paulrberg/contracts/math/=lib/prb-math/contracts',
     'ds-test/=lib/ds-test/src/',
     'forge-std/=lib/forge-std/src/',
-    'prb-math=node_modules/prb-math/',
 ]
 libraries = []
 cache = true
