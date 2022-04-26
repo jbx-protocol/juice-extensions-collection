@@ -29,7 +29,7 @@ contract DataSourceDelegate is IJBFundingCycleDataSource, IJBPayDelegate, IJBRed
       IJBRedemptionDelegate delegate
     )
   {
-    return (0, '', IJBRedemptionDelegate(address(0)));
+    return (0, '', IJBRedemptionDelegate(address(this)));
   }
 
   function didPay(JBDidPayData calldata _data) external override {}
