@@ -8,15 +8,13 @@ import '@openzeppelin/contracts/utils/Counters.sol';
 
 // /!\ This is insecure in this way (no auth check in didPay -> everyone can mint)
 
-//contract NFTRewards is ERC721Creator, IJBPayDelegate  {
 contract NFTRewards is ERC721URIStorage, IJBPayDelegate {
-  //constructor() ERC721Creator ("NFTRewards", "STDIO") {
-  //}
+  error unAuth();
 
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
-  constructor() ERC721('NFTRewards', 'STDIO') {}
+  constructor() ERC721('NFTRewards', 'JBX-NFT') {}
 
   function didPay(JBDidPayData calldata _param) public override {
     _tokenIds.increment();

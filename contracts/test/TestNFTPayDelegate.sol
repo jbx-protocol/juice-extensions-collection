@@ -10,85 +10,83 @@ import '@jbx-protocol-v2/contracts/interfaces/IJBRedemptionDelegate.sol';
 import '@jbx-protocol-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
 
 contract TestNFTPayDelegate is TestBaseWorkflow {
-  JBController controller;
-  JBProjectMetadata _projectMetadata;
-  JBFundingCycleData _data;
-  JBFundingCycleMetadata _metadata;
-  JBGroupedSplits[] _groupedSplits;
-  IJBPaymentTerminal[] _terminals;
-  JBFundAccessConstraints[] _fundAccessConstraints;
-  JBTokenStore _tokenStore;
-  address _projectOwner;
+  JBController private _controller;
+  JBETHPaymentTerminal private _terminal;
+  JBTokenStore private _tokenStore;
 
-  uint256 WEIGHT = 1000 * 10**18;
+  JBProjectMetadata private _projectMetadata;
+  JBFundingCycleData private _data;
+  JBFundingCycleMetadata private _metadata;
+  JBGroupedSplits[] private _groupedSplits; // Default empty
+  JBFundAccessConstraints[] private _fundAccessConstraints; // Default empty
+  IJBPaymentTerminal[] private _terminals; // Default empty
+
+  uint256 private _projectId;
+  address private _projectOwner;
+  uint256 private _weight = 1000 * 10**18;
+  uint256 private _targetInWei = 10 * 10**18;
 
   IJBPayDelegate payDelegate;
 
   function setUp() public override {
+    super.setUp();
+
     payDelegate = new NFTRewards();
 
     IJBFundingCycleDataSource dataSource = new NFTFundingCycleDataSource(payDelegate);
 
-    super.setUp();
+    _controller = jbController();
 
-    _projectOwner = multisig();
+    _terminal = jbETHPaymentTerminal();
 
     _tokenStore = jbTokenStore();
-
-    controller = jbController();
 
     _projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});
 
     _data = JBFundingCycleData({
       duration: 14,
-      weight: WEIGHT,
+      weight: _weight,
       discountRate: 450000000,
       ballot: IJBFundingCycleBallot(address(0))
     });
 
     _metadata = JBFundingCycleMetadata({
-      reservedRate: 5000,
-      redemptionRate: 5000,
+      reservedRate: 0,
+      redemptionRate: 10000, //100%
       ballotRedemptionRate: 0,
       pausePay: false,
       pauseDistributions: false,
       pauseRedeem: false,
       pauseBurn: false,
-      allowMinting: true,
-      allowChangeToken: true,
+      allowMinting: false,
+      allowChangeToken: false,
       allowTerminalMigration: false,
       allowControllerMigration: false,
       allowSetTerminals: false,
       allowSetController: false,
       holdFees: false,
       useTotalOverflowForRedemptions: false,
-      useDataSourceForPay: false,
+      useDataSourceForPay: true,
       useDataSourceForRedeem: false,
       dataSource: dataSource
     });
-  }
 
-  function testMint() public {
-    address caller = address(69420); // Those 3 cheat codes are needed to avoid the msg.sender changing for...reason
-    evm.startPrank(caller);
-    evm.deal(caller, 100 ether);
-
-    JBETHPaymentTerminal terminal = jbETHPaymentTerminal();
-
-    _terminals.push(terminal);
+    _terminals.push(_terminal);
 
     _fundAccessConstraints.push(
       JBFundAccessConstraints({
-        terminal: jbETHPaymentTerminal(),
+        terminal: _terminal,
         token: jbLibraries().ETHToken(),
-        distributionLimit: 10 ether,
+        distributionLimit: _targetInWei, // 10 ETH target
         overflowAllowance: 5 ether,
         distributionLimitCurrency: 1, // Currency = ETH
         overflowAllowanceCurrency: 1
       })
     );
 
-    uint256 projectId = controller.launchProjectFor(
+    _projectOwner = multisig();
+
+    _projectId = _controller.launchProjectFor(
       _projectOwner,
       _projectMetadata,
       _data,
@@ -99,9 +97,15 @@ contract TestNFTPayDelegate is TestBaseWorkflow {
       _terminals,
       ''
     );
+  }
 
-    terminal.pay{value: 20 ether}(
-      projectId,
+  function testMint() public {
+    address caller = address(69420);
+    evm.startPrank(caller);
+    evm.deal(caller, 100 ether);
+
+    _terminal.pay{value: 20 ether}(
+      _projectId,
       20 ether,
       address(0),
       caller,
