@@ -1,11 +1,11 @@
 {
-  "name": "@jbx-protocol/extensions",
+  "name": "@jbx-protocol/juice-extension-templates",
   "bugs": {
-    "url": "https://github.com/jbx-protocol/extensions/issues"
+    "url": "https://github.com/jbx-protocol/juice-extension-templates/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jbx-protocol/extensions"
+    "url": "https://github.com/jbx-protocol/juice-extension-templates"
   },
   "version": "0.0.1",
   "license": "MIT",
