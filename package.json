@@ -1,11 +1,11 @@
 {
-  "name": "@jbx-protocol/data-source",
+  "name": "@jbx-protocol/extensions",
   "bugs": {
-    "url": "https://github.com/jbx-protocol/juice-data-source/issues"
+    "url": "https://github.com/jbx-protocol/extensions/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jbx-protocol/juice-data-source"
+    "url": "https://github.com/jbx-protocol/extensions"
   },
   "version": "0.0.1",
   "license": "MIT",
@@ -21,7 +21,7 @@
     "solidity-coverage": "^0.8.0-beta.1"
   },
   "dependencies": {
-    "@jbx-protocol/contracts-v2": "^2.0.0",
+    "@jbx-protocol/contracts-v2": "^4.0.0",
     "dotenv": "^10.0.0",
     "esm": "^3.2.25",
     "glob": "^7.2.0",
