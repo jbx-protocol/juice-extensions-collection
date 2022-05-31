@@ -7,6 +7,11 @@ import '@jbx-protocol-v2/contracts/libraries/JBTokens.sol';
 
 import '@openzeppelin/contracts/interfaces/IERC721.sol';
 
+/**
+ @dev Datasource example, not modifiying the weight while pay is triggered but 
+      returning a weight of 0 while redeeming, if the caller is not an NFT holder
+*/
+
 contract NFTFundingCycleDataSource is IJBFundingCycleDataSource {
   IJBPayDelegate NFTDelegate;
 

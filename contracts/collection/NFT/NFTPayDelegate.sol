@@ -6,6 +6,9 @@ import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
+/**
+ @dev Delegate example, minting an NFT for every new contribution.
+*/
 contract NFTRewards is ERC721URIStorage, IJBPayDelegate {
   error unAuth();
 

@@ -5,6 +5,7 @@ import '@jbx-protocol-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
 import '@jbx-protocol-v2/contracts/interfaces/IJBPayDelegate.sol';
 import '@jbx-protocol-v2/contracts/interfaces/IJBRedemptionDelegate.sol';
 
+
 contract DataSourceDelegate is IJBFundingCycleDataSource, IJBPayDelegate, IJBRedemptionDelegate {
   function payParams(JBPayParamsData calldata _data)
     external

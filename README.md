@@ -28,7 +28,8 @@ Resources:
 
 - contracts/DataSourceDelegate.sol and contracts/ETHTerminal.sol contains canevas for datasource/pay&redeem delegate and terminal
 - contracts/collection/ provide a set of ready made delegates, datasources and terminals
-  -- NFT/: A datasource minting a NFT for every contribution and a redempetion delegate preventing redemption for non-NFT holder ("closed-loop treasury")
+  -- NFT/: A datasource minting a NFT for every contribution and a redemption delegate preventing redemption for non-NFT holder ("closed-loop treasury")
+  -- payment routing/: A datasource-delegate following the best possible route between minting and token buy on secondary market, in order to maximise the amount of token received by the contributor.
 
 ## Tests
 
