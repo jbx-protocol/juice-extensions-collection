@@ -2,14 +2,14 @@
 pragma solidity 0.8.6;
 
 import './helpers/TestBaseWorkflow.sol';
-import '../NFT-example/NFTPayDelegate.sol';
-import '../NFT-example/NFTFundingCycleDataSource.sol';
+import '../collection/NFT/NFTPayDelegate.sol';
+import '../collection/NFT/NFTFundingCycleDataSource.sol';
 
 import '@jbx-protocol-v2/contracts/interfaces/IJBPayDelegate.sol';
 import '@jbx-protocol-v2/contracts/interfaces/IJBRedemptionDelegate.sol';
 import '@jbx-protocol-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
 
-contract TestNFTPayDelegate is TestBaseWorkflow {
+contract TestNFT is TestBaseWorkflow {
   JBController private _controller;
   JBETHPaymentTerminal private _terminal;
   JBTokenStore private _tokenStore;
@@ -51,6 +51,10 @@ contract TestNFTPayDelegate is TestBaseWorkflow {
     });
 
     _metadata = JBFundingCycleMetadata({
+      global: JBGlobalFundingCycleMetadata({
+              allowSetTerminals: false,
+              allowSetController: false
+      }),
       reservedRate: 0,
       redemptionRate: 10000, //100%
       ballotRedemptionRate: 0,
@@ -62,13 +66,11 @@ contract TestNFTPayDelegate is TestBaseWorkflow {
       allowChangeToken: false,
       allowTerminalMigration: false,
       allowControllerMigration: false,
-      allowSetTerminals: false,
-      allowSetController: false,
       holdFees: false,
       useTotalOverflowForRedemptions: false,
       useDataSourceForPay: true,
       useDataSourceForRedeem: true,
-      dataSource: dataSource
+      dataSource: address(dataSource)
     });
 
     _terminals.push(_terminal);
