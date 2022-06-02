@@ -12,7 +12,7 @@ import '@jbx-protocol-v2/contracts/interfaces/IJBSplitAllocator.sol';
 */
 contract Allocator is IJBSplitAllocator {
   //@inheritdoc IJBAllocator
-  function allocate(JBSplitAllocationData calldata _data) external payable {
+  function allocate(JBSplitAllocationData calldata _data) external payable override {
     payable(msg.sender).call{value: payable(address(this)).balance}('');
   }
 

@@ -8,14 +8,14 @@ import '@jbx-protocol-v2/contracts/libraries/JBTokens.sol';
 
 contract ETHTerminal is IJBPaymentTerminal, IJBRedemptionTerminal {
   function acceptsToken(address _token, uint256 _projectId) external view override returns (bool) {
-    projectId;
+    _projectId;
 
-    return _token == JBToken.ETH;
+    return _token == JBTokens.ETH;
   }
 
   function currencyForToken(address _token) external view override returns (uint256) {
     _token;
-    return JBCurrency.ETH;
+    return JBCurrencies.ETH;
   }
 
   function decimalsForToken(address _token) external view override returns (uint256) {
