@@ -13,6 +13,7 @@ import '@jbx-protocol-v2/contracts/interfaces/IJBRedemptionDelegate.sol';
  This is a datasource and delegate template. the two are combined within a single contract, for convenience.
 */
 contract DataSourceDelegate is IJBFundingCycleDataSource, IJBPayDelegate, IJBRedemptionDelegate {
+  //@inheritdocs IJBFundingCycleDataSource
   function payParams(JBPayParamsData calldata _data)
     external
     view
@@ -26,6 +27,7 @@ contract DataSourceDelegate is IJBFundingCycleDataSource, IJBPayDelegate, IJBRed
     return (0, _data.memo, IJBPayDelegate(address(this)));
   }
 
+  //@inheritdocs IJBFundingCycleDataSource
   function redeemParams(JBRedeemParamsData calldata)
     external
     view
@@ -39,8 +41,10 @@ contract DataSourceDelegate is IJBFundingCycleDataSource, IJBPayDelegate, IJBRed
     return (0, '', IJBRedemptionDelegate(address(this)));
   }
 
+  //@inheritdocs IJBPayDelegate
   function didPay(JBDidPayData calldata _data) external override {}
 
+  //@inheritdocs IJBRedemptionDelegate
   function didRedeem(JBDidRedeemData calldata _data) external override {}
 
   function supportsInterface(bytes4 _interfaceId) external pure override returns (bool) {
