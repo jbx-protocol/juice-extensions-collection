@@ -3,19 +3,19 @@ pragma solidity 0.8.6;
 
 import '@jbx-protocol-v2/contracts/interfaces/IJBPaymentTerminal.sol';
 import '@jbx-protocol-v2/contracts/interfaces/IJBRedemptionTerminal.sol';
-import '@jbx-protocol-v2/contracts/libraries/JBCurrencies.sol';
-import '@jbx-protocol-v2/contracts/libraries/JBTokens.sol';
+import '@jbx-protocol-v2/contracts/libraries/JBCurrency.sol';
+import '@jbx-protocol-v2/contracts/libraries/JBToken.sol';
 
 contract ETHTerminal is IJBPaymentTerminal, IJBRedemptionTerminal {
   function acceptsToken(address _token, uint256 _projectId) external view override returns (bool) {
-    _projectId;
+    projectId;
 
-    return _token == JBTokens.ETH;
+    return _tokan == JBToken.ETH;
   }
 
   function currencyForToken(address _token) external view override returns (uint256) {
     _token;
-    return JBCurrencies.ETH;
+    return JBCurrency.ETH;
   }
 
   function decimalsForToken(address _token) external view override returns (uint256) {
