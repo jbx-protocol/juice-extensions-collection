@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
 
-import '@jbx-protocol-v2/contracts/interfaces/IJBSplitAllocator.sol';
+import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
+//import '@jbx-protocol-v2/contracts/interfaces/IJBSplitAllocator.sol';
+import '@jbx-protocol-v2/contracts/structs/JBSplitAllocationData.sol';
 
 /**
  @title
@@ -10,13 +12,19 @@ import '@jbx-protocol-v2/contracts/interfaces/IJBSplitAllocator.sol';
  @notice
  This is an allocator template, used as a recipient of a payout split, to add an extra layer of logic in fund allocation
 */
-contract Allocator is IJBSplitAllocator {
+contract Allocator is ERC165, IJBSplitAllocator {
   //@inheritdoc IJBAllocator
   function allocate(JBSplitAllocationData calldata _data) external payable override {
-    payable(msg.sender).call{value: payable(address(this)).balance}('');
+    // Do something with the fund received
   }
 
-  function supportsInterface(bytes4 _interfaceId) external pure override returns (bool) {
-    return _interfaceId == type(IJBSplitAllocator).interfaceId;
+  function supportsInterface(bytes4 _interfaceId)
+    public
+    view
+    override(IERC165, ERC165)
+    returns (bool)
+  {
+    return
+      _interfaceId == type(IJBSplitAllocator).interfaceId || super.supportsInterface(_interfaceId);
   }
 }

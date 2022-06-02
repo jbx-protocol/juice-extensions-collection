@@ -1,6 +1,6 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-//import "@manifoldxyz/creator-core-solidity/contracts/ERC721Creator.sol";
 import '@jbx-protocol-v2/contracts/interfaces/IJBPayDelegate.sol';
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';

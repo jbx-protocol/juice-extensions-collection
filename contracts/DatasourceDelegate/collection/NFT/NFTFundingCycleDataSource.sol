@@ -6,13 +6,14 @@ import '@jbx-protocol-v2/contracts/libraries/JBCurrencies.sol';
 import '@jbx-protocol-v2/contracts/libraries/JBTokens.sol';
 
 import '@openzeppelin/contracts/interfaces/IERC721.sol';
+import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
 
 /**
  @dev Datasource example, not modifiying the weight while pay is triggered but 
       returning a weight of 0 while redeeming, if the caller is not an NFT holder
 */
 
-contract NFTFundingCycleDataSource is IJBFundingCycleDataSource {
+contract NFTFundingCycleDataSource is IJBFundingCycleDataSource, ERC165 {
   IJBPayDelegate NFTDelegate;
 
   constructor(IJBPayDelegate _delegate) {
@@ -47,10 +48,16 @@ contract NFTFundingCycleDataSource is IJBFundingCycleDataSource {
     else return (0, 'no way', IJBRedemptionDelegate(address(0)));
   }
 
-  function supportsInterface(bytes4 _interfaceId) external pure override returns (bool) {
+  function supportsInterface(bytes4 _interfaceId)
+    public
+    view
+    override(IERC165, ERC165)
+    returns (bool)
+  {
     return
       _interfaceId == type(IJBFundingCycleDataSource).interfaceId ||
       _interfaceId == type(IJBPayDelegate).interfaceId ||
-      _interfaceId == type(IJBRedemptionDelegate).interfaceId;
+      _interfaceId == type(IJBRedemptionDelegate).interfaceId ||
+      super.supportsInterface(_interfaceId);
   }
 }
