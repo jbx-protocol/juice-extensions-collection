@@ -2,8 +2,8 @@
 pragma solidity 0.8.6;
 
 import './helpers/TestBaseWorkflow.sol';
-import '../collection/NFT/NFTPayDelegate.sol';
-import '../collection/NFT/NFTFundingCycleDataSource.sol';
+import '../examples/NFT/NFTPayDelegate.sol';
+import '../examples/NFT/NFTFundingCycleDataSource.sol';
 
 import '@jbx-protocol-v2/contracts/interfaces/IJBPayDelegate.sol';
 import '@jbx-protocol-v2/contracts/interfaces/IJBRedemptionDelegate.sol';
@@ -51,10 +51,7 @@ contract TestNFT is TestBaseWorkflow {
     });
 
     _metadata = JBFundingCycleMetadata({
-      global: JBGlobalFundingCycleMetadata({
-              allowSetTerminals: false,
-              allowSetController: false
-      }),
+      global: JBGlobalFundingCycleMetadata({allowSetTerminals: false, allowSetController: false}),
       reservedRate: 0,
       redemptionRate: 10000, //100%
       ballotRedemptionRate: 0,
