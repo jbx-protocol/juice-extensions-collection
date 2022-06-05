@@ -4,7 +4,7 @@ pragma solidity 0.8.6;
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
 import '@jbx-protocol-v2/contracts/interfaces/IJBSplitAllocator.sol';
 import '@jbx-protocol-v2/contracts/interfaces/IJBSplitsStore.sol';
-x
+
 /**
  @title
  Juicebox sunset split allocator
@@ -16,8 +16,7 @@ x
 contract Allocator is ERC165, IJBSplitAllocator {
   //@inheritdoc IJBAllocator
   function allocate(JBSplitAllocationData calldata _data) external payable override {
-    JBSplit[] memory _splits = splitsStore.splitsOf(_projectId, _domain, _group);
-
+    //JBSplit[] memory _splits = splitsStore.splitsOf(_projectId, _domain, _group);
     // Do something with the fund received
     // address token;
     // uint256 amount;
