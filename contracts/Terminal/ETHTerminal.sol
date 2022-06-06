@@ -3,19 +3,20 @@ pragma solidity 0.8.6;
 
 import '@jbx-protocol-v2/contracts/interfaces/IJBPaymentTerminal.sol';
 import '@jbx-protocol-v2/contracts/interfaces/IJBRedemptionTerminal.sol';
-import '@jbx-protocol-v2/contracts/libraries/JBCurrency.sol';
-import '@jbx-protocol-v2/contracts/libraries/JBToken.sol';
+import '@jbx-protocol-v2/contracts/libraries/JBCurrencies.sol';
+import '@jbx-protocol-v2/contracts/libraries/JBTokens.sol';
+import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
 
-contract ETHTerminal is IJBPaymentTerminal, IJBRedemptionTerminal {
+contract ETHTerminal is IJBPaymentTerminal, IJBRedemptionTerminal, ERC165 {
   function acceptsToken(address _token, uint256 _projectId) external view override returns (bool) {
-    projectId;
+    _projectId;
 
-    return _tokan == JBToken.ETH;
+    return _token == JBTokens.ETH;
   }
 
   function currencyForToken(address _token) external view override returns (uint256) {
     _token;
-    return JBCurrency.ETH;
+    return JBCurrencies.ETH;
   }
 
   function decimalsForToken(address _token) external view override returns (uint256) {
@@ -64,9 +65,15 @@ contract ETHTerminal is IJBPaymentTerminal, IJBRedemptionTerminal {
     // Do something on redeem.
   }
 
-  function supportsInterface(bytes4 _interfaceId) external pure override returns (bool) {
+  function supportsInterface(bytes4 _interfaceId)
+    public
+    view
+    override(IERC165, ERC165)
+    returns (bool)
+  {
     return
       _interfaceId == type(IJBPaymentTerminal).interfaceId ||
-      _interfaceId == type(IJBRedemptionTerminal).interfaceId;
+      _interfaceId == type(IJBRedemptionTerminal).interfaceId ||
+      super.supportsInterface(_interfaceId);
   }
 }

@@ -1,35 +1,12 @@
 # juice-data-source
 
-## Develop
+## Notice
 
-### Unit Tests
+This repo provides some implementation templates of peripheral contracts of the Juicebox V2 ecosystem, as well as some common implementation as examples.
 
-To run the unit tests suite (in Javascript), you'll need to manually run Hardhat in order to enable ESM support:
+## Installation
 
-```bash
-node --require esm ./node_modules/.bin/hardhat test --network hardhat
-```
-
-Alternatively, you can run a local Hardhat node in another terminal using
-
-```bash
-yarn chain --network hardhat
-```
-
-then run the following:
-
-```bash
-yarn test
-```
-
-It might happens that Hardhat cannot resolve custom error (test failing on "Expecter nameOfTheError() but reverted
-without a reason string"), just restart yarn chain.
-
-### System Tests
-
-End-to-end tests have been written in Solidity, using Foundry.
-
-To get set up:
+This repo is powered by Forge. To install the latest version, follow the [instructions](https://github.com/foundry-rs/foundry):
 
 1. Install [Foundry](https://github.com/gakonst/foundry).
 
@@ -37,60 +14,45 @@ To get set up:
 curl -L https://foundry.paradigm.xyz | sh
 ```
 
-2. Install external lib(s)
-
-```bash
-git submodule update --init
-```
-
-3. Run tests:
-
-```bash
-forge test
-```
-
-4. Update Foundry periodically:
+2. Update to the latest version
 
 ```bash
 foundryup
 ```
 
-Resources:
-
-- [The Forge-Book](https://onbjerg.github.io/foundry-book/forge)
-
-### Coverage
-
-To check current unit tests coverage:
+3. Install external libs
 
 ```bash
-node --require esm ./node_modules/.bin/hardhat coverage --network hardhat
+git submodule update --init
 ```
 
-A few notes:
+Resources:
 
-- Hardhat doesn't support [esm](https://nodejs.org/api/esm.html) yet, hence running manually with node.
-- We are currently using a forked version of [solidity-coverage](https://www.npmjs.com/package/solidity-coverage) that includes optimizer settings. Ideally we will move to the maintained version after this is fixed on their end.
-- Juicebox V2 codebase being quite large, Solidity Coverage might run out of memory if you modify/add parts to it. Please check [Solidity-coverage FAQ](https://github.com/sc-forks/solidity-coverage/blob/master/docs/faq.md) in order to address the issue.
+- [The Forge-Book](https://book.getfoundry.sh)
+
+## Content
+
+This repo is organised as follow:
+
+- contracts/Allocator: contains an IJBSplitsAllocator implementation template (Allocator.sol) as well as existing implementions, in contracts/Allocator/examples:
+  -- SunsetAllocator.sol: an allocator providing custom sunsets (a timestamp after which a reccuring payment is not made anymore) to each beneficiaries of a group of splits
+
+- contracts/DatasourceDelegate: contains an IJBFundingCycleDataSource, IJBPayDelegate and IJBRedemptionDelegate implementation templates (DataSourceDelegate.sol) as well as existing implementions, in contracts/Allocator/examples:
+  -- NFT directory: a datasource minting a NFT for every contribution and a redemption delegate preventing redemption for non-NFT holder ("closed-loop treasury")
+  -- payment routing/: A datasource-delegate following the best possible route between minting and token buy on secondary market, in order to maximise the amount of token received by the contributor.
+
+- contracts/Terminal: contains an IJBPaymentTerminal and IJBRedemptionTerminal implementation template.
+
+## Tests
+
+Test for every extension are provided in contracts/test. Those test are using a complete Juicebox contracts deployment (provided in helpers/TestBaseWorkflow) without requiring a forked network.
 
 ## Deploy
 
-Juicebox uses the [Hardhat Deploy](https://github.com/wighawag/hardhat-deploy) plugin to deploy contracts to a given network. But before using it, you must create a `./mnemonic.txt` file containing the mnemonic phrase of the wallet used to deploy. You can generate a new mnemonic using [this tool](https://github.com/itinance/mnemonics). Generate a mnemonic at your own risk.
+Refer to the [Foundry Book](https://book.getfoundry.sh/forge/deploying.html) on deploying for advanced use.
 
-Then, to execute the `./deploy/deploy.js` script, run the following:
-
-```bash
-npx hardhat deploy --network $network
-```
-
-Contract artifacts will be outputted to `./deployments/$network/**` and should be checked in to the repo.
-
-## Verification
-
-To verify the contracts on [Etherscan](https://etherscan.io), make sure you have an `ETHERSCAN_API_KEY` set in your `./.env` file. Then run the following:
+Example of deployment and etherscan verification:
 
 ```bash
-npx hardhat --network $network etherscan-verify
+forge create --rpc-url RPC_NODE_URL -i --verify --constructor-args "FOO" 123 "BAR"
 ```
-
-This will verify all of the deployed contracts in `./deployments`.
