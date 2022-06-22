@@ -23,8 +23,10 @@ foundryup
 3. Install external libs
 
 ```bash
-git submodule update --init
+git submodule update --init && foundry update
 ```
+
+If git modules are failing to clone, not installing, etc (ie overall submodule misbehaving), use `git submodule update --init --recursive --force`
 
 Resources:
 
