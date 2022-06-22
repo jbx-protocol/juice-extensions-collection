@@ -16,7 +16,13 @@ import '@jbx-protocol-v2/contracts/interfaces/IJBSplitsStore.sol';
 contract Allocator is ERC165, IJBSplitAllocator {
   //@inheritdoc IJBAllocator
   function allocate(JBSplitAllocationData calldata _data) external payable override {
-    //JBSplit[] memory _splits = splitsStore.splitsOf(_projectId, _domain, _group);
+    JBSplit[] memory _splits = splitsStore.splitsOf(
+      _data.projectId,
+      /*_domain*/
+      0,
+      _data.group
+    );
+
     // Do something with the fund received
     // address token;
     // uint256 amount;
