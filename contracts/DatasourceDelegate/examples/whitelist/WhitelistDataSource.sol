@@ -10,12 +10,12 @@ import '@jbx-protocol-v2/contracts/interfaces/IJBProjects.sol';
 
   @notice
   This is a datasource handeling a mapping of whitelisted addresses. The project owner should add
-  addresses to this datasource using addToWhitelist. This is a simple imlpementation (using a mapping),
+  addresses to this datasource using addToWhitelist. This is a simple implementation (using a mapping),
   for bigger whitelist, a more gas-efficient solution might be better (eg merkle tree)
 
   @dev
   Access is controlled at add/remove whitelist addresses level, the delegate can be reused if another
-  project wants the same set of whitelisted addresses.
+  project wants the same set of whitelisted addresses (ie there is no access control to payParams(..))
 */
 contract WhitelistDataSource is IJBFundingCycleDataSource {
   IJBProjects immutable jbProjects;
@@ -26,6 +26,11 @@ contract WhitelistDataSource is IJBFundingCycleDataSource {
     @dev Throws if a non-whitelisted beneficiary trie to pay
   */
   error WhitelistDataSource_BeneficiaryNotWhitelisted();
+
+  /**
+  @dev Throws if sender is not the project owner
+  */
+  error WhitelistDataSource_Unauthorised();
 
   /**
     @dev   emit when adding addresses to the whitelist
@@ -47,8 +52,8 @@ contract WhitelistDataSource is IJBFundingCycleDataSource {
   /**
     @notice Only the holder of the project NFT can execute the function (used for the whitelist management)
   */
-  modifier onlyProjectOwner(uint256 _projectId) {
-    if (msg.sender != jbProjects.ownerOf(_projectId)) revert WhitelistDataSource_Unauthorised();
+  modifier onlyProjectOwner() {
+    if (msg.sender != jbProjects.ownerOf(projectId)) revert WhitelistDataSource_Unauthorised();
     _;
   }
 
@@ -86,7 +91,7 @@ contract WhitelistDataSource is IJBFundingCycleDataSource {
     @dev     the previous whitelist status is not read, for gas optimisation
     @param   addresses the addresses to whitelist
   */
-  function addToWhitelist(address[] calldata addresses) onlyProjectOwner {
+  function addToWhitelist(address[] calldata addresses) external onlyProjectOwner {
     uint256 numberOfAddresses = addresses.length; // Push to stack
     for (uint256 i; i < numberOfAddresses; ) {
       isWhitelisted[addresses[i]] = true;
@@ -101,7 +106,7 @@ contract WhitelistDataSource is IJBFundingCycleDataSource {
     @notice  Add a single address to the whitelist
     @param   _address the address to whitelist
   */
-  function addToWhitelist(address _address) onlyProjectOwner {
+  function addToWhitelist(address _address) external onlyProjectOwner {
     isWhitelisted[_address] = true;
     emit AddToWhitelist(1);
   }
