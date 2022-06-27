@@ -2,7 +2,7 @@
 pragma solidity 0.8.6;
 
 import './helpers/TestBaseWorkflow.sol';
-import '../examples/whitelist/WhitelistDatasource.sol';
+import '../examples/whitelist/WhitelistDataSource.sol';
 
 import '@jbx-protocol-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
 
