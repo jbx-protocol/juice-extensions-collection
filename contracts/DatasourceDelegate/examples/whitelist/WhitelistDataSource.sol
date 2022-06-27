@@ -80,7 +80,7 @@ contract WhitelistDataSource is IJBFundingCycleDataSource {
     // Revert if beneficiary is non whitelisted
     if (!isWhitelisted[_data.beneficiary]) revert WhitelistDataSource_BeneficiaryNotWhitelisted();
 
-    // If disabling non-whitelisted payer too, uncomment the following:
+    // If disabling non-whitelisted payers too, uncomment the following:
     // if (!isWhitelisted[_data.payer]) revert WhitelistDataSource_BeneficiaryNotWhitelisted();
 
     return (_data.weight, _data.memo, IJBPayDelegate(address(0)));
