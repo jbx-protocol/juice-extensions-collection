@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
 
-import 'ds-test/test.sol';
-import 'forge-std/Vm.sol';
+import 'forge-std/Test.sol';
 
 import '@jbx-protocol-v2/contracts/JBController.sol';
 import '@jbx-protocol-v2/contracts/JBDirectory.sol';
@@ -41,7 +40,7 @@ import '@paulrberg/contracts/math/PRBMath.sol';
 // Base contract for Juicebox system tests.
 //
 // Provides common functionality, such as deploying contracts on test setup.
-contract TestBaseWorkflow is DSTest {
+contract TestBaseWorkflow is Test {
   //*********************************************************************//
   // --------------------- private stored properties ------------------- //
   //*********************************************************************//
@@ -50,9 +49,6 @@ contract TestBaseWorkflow is DSTest {
   address private _multisig = address(123);
 
   address private _beneficiary = address(69420);
-
-  // EVM Cheat codes - test addresses via prank and startPrank in hevm
-  Vm public evm = Vm(HEVM_ADDRESS);
 
   // JBOperatorStore
   JBOperatorStore private _jbOperatorStore;
@@ -152,38 +148,38 @@ contract TestBaseWorkflow is DSTest {
   // Deploys and initializes contracts for testing.
   function setUp() public virtual {
     // Labels
-    evm.label(_multisig, 'projectOwner');
-    evm.label(_beneficiary, 'beneficiary');
+    vm.label(_multisig, 'projectOwner');
+    vm.label(_beneficiary, 'beneficiary');
 
     // JBOperatorStore
     _jbOperatorStore = new JBOperatorStore();
-    evm.label(address(_jbOperatorStore), 'JBOperatorStore');
+    vm.label(address(_jbOperatorStore), 'JBOperatorStore');
 
     // JBProjects
     _jbProjects = new JBProjects(_jbOperatorStore);
-    evm.label(address(_jbProjects), 'JBProjects');
+    vm.label(address(_jbProjects), 'JBProjects');
 
     // JBPrices
     _jbPrices = new JBPrices(_multisig);
-    evm.label(address(_jbPrices), 'JBPrices');
+    vm.label(address(_jbPrices), 'JBPrices');
 
     address contractAtNoncePlusOne = addressFrom(address(this), 5);
 
     // JBFundingCycleStore
     _jbFundingCycleStore = new JBFundingCycleStore(IJBDirectory(contractAtNoncePlusOne));
-    evm.label(address(_jbFundingCycleStore), 'JBFundingCycleStore');
+    vm.label(address(_jbFundingCycleStore), 'JBFundingCycleStore');
 
     // JBDirectory
     _jbDirectory = new JBDirectory(_jbOperatorStore, _jbProjects, _jbFundingCycleStore, _multisig);
-    evm.label(address(_jbDirectory), 'JBDirectory');
+    vm.label(address(_jbDirectory), 'JBDirectory');
 
     // JBTokenStore
     _jbTokenStore = new JBTokenStore(_jbOperatorStore, _jbProjects, _jbDirectory);
-    evm.label(address(_jbTokenStore), 'JBTokenStore');
+    vm.label(address(_jbTokenStore), 'JBTokenStore');
 
     // JBSplitsStore
     _jbSplitsStore = new JBSplitsStore(_jbOperatorStore, _jbProjects, _jbDirectory);
-    evm.label(address(_jbSplitsStore), 'JBSplitsStore');
+    vm.label(address(_jbSplitsStore), 'JBSplitsStore');
 
     // JBController
     _jbController = new JBController(
@@ -194,9 +190,9 @@ contract TestBaseWorkflow is DSTest {
       _jbTokenStore,
       _jbSplitsStore
     );
-    evm.label(address(_jbController), 'JBController');
+    vm.label(address(_jbController), 'JBController');
 
-    evm.prank(_multisig);
+    vm.prank(_multisig);
     _jbDirectory.setIsAllowedToSetFirstController(address(_jbController), true);
 
     // JBETHPaymentTerminalStore
@@ -205,7 +201,7 @@ contract TestBaseWorkflow is DSTest {
       _jbFundingCycleStore,
       _jbPrices
     );
-    evm.label(address(_jbPaymentTerminalStore), 'JBSingleTokenPaymentTerminalStore');
+    vm.label(address(_jbPaymentTerminalStore), 'JBSingleTokenPaymentTerminalStore');
 
     // AccessJBLib
     _accessJBLib = new AccessJBLib();
@@ -221,12 +217,12 @@ contract TestBaseWorkflow is DSTest {
       _jbPaymentTerminalStore,
       _multisig
     );
-    evm.label(address(_jbETHPaymentTerminal), 'JBETHPaymentTerminal');
+    vm.label(address(_jbETHPaymentTerminal), 'JBETHPaymentTerminal');
 
-    evm.prank(_multisig);
+    vm.prank(_multisig);
     _jbToken = new JBToken('MyToken', 'MT');
 
-    evm.prank(_multisig);
+    vm.prank(_multisig);
     _jbToken.mint(0, _multisig, 100 * 10**18);
 
     // JBERC20PaymentTerminal
@@ -243,7 +239,7 @@ contract TestBaseWorkflow is DSTest {
       _jbPaymentTerminalStore,
       _multisig
     );
-    evm.label(address(_jbERC20PaymentTerminal), 'JBERC20PaymentTerminal');
+    vm.label(address(_jbERC20PaymentTerminal), 'JBERC20PaymentTerminal');
   }
 
   //https://ethereum.stackexchange.com/questions/24248/how-to-calculate-an-ethereum-contracts-address-during-its-creation-using-the-so

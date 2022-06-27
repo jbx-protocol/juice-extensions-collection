@@ -101,8 +101,8 @@ contract TestNFT is TestBaseWorkflow {
   /// @notice will test the NFT minting triggered by a call to pay()
   function testMint() public {
     address caller = address(69420);
-    evm.startPrank(caller);
-    evm.deal(caller, 100 ether);
+    vm.startPrank(caller);
+    vm.deal(caller, 100 ether);
 
     _terminal.pay{value: 20 ether}(
       _projectId,
@@ -124,8 +124,8 @@ contract TestNFT is TestBaseWorkflow {
     address callerTwo = address(42069);
 
     // pay to the project, caller One will then receive the NFT (via the pay delegate)
-    evm.startPrank(callerOne);
-    evm.deal(callerOne, 100 ether);
+    vm.startPrank(callerOne);
+    vm.deal(callerOne, 100 ether);
 
     _terminal.pay{value: 20 ether}(
       _projectId,
@@ -157,8 +157,8 @@ contract TestNFT is TestBaseWorkflow {
 
     uint256 transferedCallerOne = callerOne.balance - balanceBeforeCallerOne;
 
-    evm.stopPrank();
-    evm.startPrank(callerTwo);
+    vm.stopPrank();
+    vm.startPrank(callerTwo);
     uint256 balanceBeforeCallerTwo = callerTwo.balance;
 
     _terminal.redeemTokensOf(
