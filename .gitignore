@@ -3,4 +3,5 @@ node_modules
 cache
 mnemonic.txt
 pk.txt
-.DS_Store 
+.DS_Store
+out
