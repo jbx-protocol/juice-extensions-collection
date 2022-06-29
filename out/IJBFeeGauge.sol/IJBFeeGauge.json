@@ -1,0 +1,163 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_projectId",
+          "type": "uint256"
+        }
+      ],
+      "name": "currentDiscountFor",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "currentDiscountFor(uint256)": "77695896"
+  },
+  "ast": {
+    "absolutePath": "lib/juice-contracts-v2/contracts/interfaces/IJBFeeGauge.sol",
+    "id": 15285,
+    "exportedSymbols": {
+      "IJBFeeGauge": [
+        15284
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:133:34",
+    "nodes": [
+      {
+        "id": 15276,
+        "nodeType": "PragmaDirective",
+        "src": "32:22:34",
+        "literals": [
+          "solidity",
+          "0.8",
+          ".6"
+        ]
+      },
+      {
+        "id": 15284,
+        "nodeType": "ContractDefinition",
+        "src": "56:108:34",
+        "nodes": [
+          {
+            "id": 15283,
+            "nodeType": "FunctionDefinition",
+            "src": "82:80:34",
+            "functionSelector": "77695896",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "currentDiscountFor",
+            "nameLocation": "91:18:34",
+            "parameters": {
+              "id": 15279,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 15278,
+                  "mutability": "mutable",
+                  "name": "_projectId",
+                  "nameLocation": "118:10:34",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15283,
+                  "src": "110:18:34",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 15277,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "110:7:34",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "109:20:34"
+            },
+            "returnParameters": {
+              "id": 15282,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 15281,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15283,
+                  "src": "153:7:34",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 15280,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "153:7:34",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "152:9:34"
+            },
+            "scope": 15284,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          15284
+        ],
+        "name": "IJBFeeGauge",
+        "nameLocation": "66:11:34",
+        "scope": 15285,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 34
+}

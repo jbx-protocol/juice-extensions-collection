@@ -1,0 +1,651 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "ETH",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ETHToken",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MAX_FEE",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "SPLITS_TOTAL_PERCENT",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "USD",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b5060bf8061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060505760003560e01c80631bf6c21b1460555780638322fff214606b578063bc063e1a146071578063d3c4fca9146071578063deda20c214607a575b600080fd5b60025b6040519081526020015b60405180910390f35b60016058565b633b9aca006058565b60405161eeee8152602001606256fea2646970667358221220130c119b52e573173586f1fe4de7e5074fe65bbe6df113b908e1ff654a85280364736f6c63430008060033",
+    "sourceMap": "244:489:8:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080604052348015600f57600080fd5b506004361060505760003560e01c80631bf6c21b1460555780638322fff214606b578063bc063e1a146071578063d3c4fca9146071578063deda20c214607a575b600080fd5b60025b6040519081526020015b60405180910390f35b60016058565b633b9aca006058565b60405161eeee8152602001606256fea2646970667358221220130c119b52e573173586f1fe4de7e5074fe65bbe6df113b908e1ff654a85280364736f6c63430008060033",
+    "sourceMap": "244:489:8:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;354:81;146:1:58;354:81:8;;;368:25:136;;;356:2;341:18;354:81:8;;;;;;;;269;111:1:58;269:81:8;;525:88;409:10:57;525:88:8;;439:82;;;240:42:64;160:51:136;;148:2;133:18;439:82:8;115:102:136",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "ETH()": "8322fff2",
+    "ETHToken()": "deda20c2",
+    "MAX_FEE()": "bc063e1a",
+    "SPLITS_TOTAL_PERCENT()": "d3c4fca9",
+    "USD()": "1bf6c21b"
+  },
+  "ast": {
+    "absolutePath": "contracts/DatasourceDelegate/test/helpers/AccessJBLib.sol",
+    "id": 1277,
+    "exportedSymbols": {
+      "AccessJBLib": [
+        1276
+      ],
+      "JBConstants": [
+        16776
+      ],
+      "JBCurrencies": [
+        16785
+      ],
+      "JBTokens": [
+        17583
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:702:8",
+    "nodes": [
+      {
+        "id": 1227,
+        "nodeType": "PragmaDirective",
+        "src": "32:22:8",
+        "literals": [
+          "solidity",
+          "0.8",
+          ".6"
+        ]
+      },
+      {
+        "id": 1228,
+        "nodeType": "ImportDirective",
+        "src": "56:63:8",
+        "absolutePath": "lib/juice-contracts-v2/contracts/libraries/JBCurrencies.sol",
+        "file": "@jbx-protocol-v2/contracts/libraries/JBCurrencies.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 1277,
+        "sourceUnit": 16786,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 1229,
+        "nodeType": "ImportDirective",
+        "src": "120:62:8",
+        "absolutePath": "lib/juice-contracts-v2/contracts/libraries/JBConstants.sol",
+        "file": "@jbx-protocol-v2/contracts/libraries/JBConstants.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 1277,
+        "sourceUnit": 16777,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 1230,
+        "nodeType": "ImportDirective",
+        "src": "183:59:8",
+        "absolutePath": "lib/juice-contracts-v2/contracts/libraries/JBTokens.sol",
+        "file": "@jbx-protocol-v2/contracts/libraries/JBTokens.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 1277,
+        "sourceUnit": 17584,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 1276,
+        "nodeType": "ContractDefinition",
+        "src": "244:489:8",
+        "nodes": [
+          {
+            "id": 1239,
+            "nodeType": "FunctionDefinition",
+            "src": "269:81:8",
+            "body": {
+              "id": 1238,
+              "nodeType": "Block",
+              "src": "316:34:8",
+              "statements": [
+                {
+                  "expression": {
+                    "expression": {
+                      "id": 1235,
+                      "name": "JBCurrencies",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 16785,
+                      "src": "329:12:8",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_contract$_JBCurrencies_$16785_$",
+                        "typeString": "type(library JBCurrencies)"
+                      }
+                    },
+                    "id": 1236,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "ETH",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": 16781,
+                    "src": "329:16:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 1234,
+                  "id": 1237,
+                  "nodeType": "Return",
+                  "src": "322:23:8"
+                }
+              ]
+            },
+            "functionSelector": "8322fff2",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "ETH",
+            "nameLocation": "278:3:8",
+            "parameters": {
+              "id": 1231,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "281:2:8"
+            },
+            "returnParameters": {
+              "id": 1234,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1233,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1239,
+                  "src": "307:7:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1232,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "307:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "306:9:8"
+            },
+            "scope": 1276,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 1248,
+            "nodeType": "FunctionDefinition",
+            "src": "354:81:8",
+            "body": {
+              "id": 1247,
+              "nodeType": "Block",
+              "src": "401:34:8",
+              "statements": [
+                {
+                  "expression": {
+                    "expression": {
+                      "id": 1244,
+                      "name": "JBCurrencies",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 16785,
+                      "src": "414:12:8",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_contract$_JBCurrencies_$16785_$",
+                        "typeString": "type(library JBCurrencies)"
+                      }
+                    },
+                    "id": 1245,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "USD",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": 16784,
+                    "src": "414:16:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 1243,
+                  "id": 1246,
+                  "nodeType": "Return",
+                  "src": "407:23:8"
+                }
+              ]
+            },
+            "functionSelector": "1bf6c21b",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "USD",
+            "nameLocation": "363:3:8",
+            "parameters": {
+              "id": 1240,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "366:2:8"
+            },
+            "returnParameters": {
+              "id": 1243,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1242,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1248,
+                  "src": "392:7:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1241,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "392:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "391:9:8"
+            },
+            "scope": 1276,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 1257,
+            "nodeType": "FunctionDefinition",
+            "src": "439:82:8",
+            "body": {
+              "id": 1256,
+              "nodeType": "Block",
+              "src": "491:30:8",
+              "statements": [
+                {
+                  "expression": {
+                    "expression": {
+                      "id": 1253,
+                      "name": "JBTokens",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 17583,
+                      "src": "504:8:8",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_contract$_JBTokens_$17583_$",
+                        "typeString": "type(library JBTokens)"
+                      }
+                    },
+                    "id": 1254,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "ETH",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": 17582,
+                    "src": "504:12:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "functionReturnParameters": 1252,
+                  "id": 1255,
+                  "nodeType": "Return",
+                  "src": "497:19:8"
+                }
+              ]
+            },
+            "functionSelector": "deda20c2",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "ETHToken",
+            "nameLocation": "448:8:8",
+            "parameters": {
+              "id": 1249,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "456:2:8"
+            },
+            "returnParameters": {
+              "id": 1252,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1251,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1257,
+                  "src": "482:7:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1250,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "482:7:8",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "481:9:8"
+            },
+            "scope": 1276,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 1266,
+            "nodeType": "FunctionDefinition",
+            "src": "525:88:8",
+            "body": {
+              "id": 1265,
+              "nodeType": "Block",
+              "src": "576:37:8",
+              "statements": [
+                {
+                  "expression": {
+                    "expression": {
+                      "id": 1262,
+                      "name": "JBConstants",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 16776,
+                      "src": "589:11:8",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_contract$_JBConstants_$16776_$",
+                        "typeString": "type(library JBConstants)"
+                      }
+                    },
+                    "id": 1263,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "MAX_FEE",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": 16772,
+                    "src": "589:19:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 1261,
+                  "id": 1264,
+                  "nodeType": "Return",
+                  "src": "582:26:8"
+                }
+              ]
+            },
+            "functionSelector": "bc063e1a",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "MAX_FEE",
+            "nameLocation": "534:7:8",
+            "parameters": {
+              "id": 1258,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "541:2:8"
+            },
+            "returnParameters": {
+              "id": 1261,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1260,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1266,
+                  "src": "567:7:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1259,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "567:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "566:9:8"
+            },
+            "scope": 1276,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 1275,
+            "nodeType": "FunctionDefinition",
+            "src": "617:114:8",
+            "body": {
+              "id": 1274,
+              "nodeType": "Block",
+              "src": "681:50:8",
+              "statements": [
+                {
+                  "expression": {
+                    "expression": {
+                      "id": 1271,
+                      "name": "JBConstants",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 16776,
+                      "src": "694:11:8",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_contract$_JBConstants_$16776_$",
+                        "typeString": "type(library JBConstants)"
+                      }
+                    },
+                    "id": 1272,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "SPLITS_TOTAL_PERCENT",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": 16769,
+                    "src": "694:32:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 1270,
+                  "id": 1273,
+                  "nodeType": "Return",
+                  "src": "687:39:8"
+                }
+              ]
+            },
+            "functionSelector": "d3c4fca9",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "SPLITS_TOTAL_PERCENT",
+            "nameLocation": "626:20:8",
+            "parameters": {
+              "id": 1267,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "646:2:8"
+            },
+            "returnParameters": {
+              "id": 1270,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1269,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1275,
+                  "src": "672:7:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1268,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "672:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "671:9:8"
+            },
+            "scope": 1276,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          1276
+        ],
+        "name": "AccessJBLib",
+        "nameLocation": "253:11:8",
+        "scope": 1277,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 8
+}

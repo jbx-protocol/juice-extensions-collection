@@ -1,0 +1,176 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "ETH_PAYOUT",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "RESERVED_TOKENS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x6098610038600b82828239805160001a607314602b57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe7300000000000000000000000000000000000000003014608060405260043610603d5760003560e01c806368fc68c7146042578063ad8710ad14605b575b600080fd5b6049600281565b60405190815260200160405180910390f35b604960018156fea2646970667358221220a5eac8da4b27d2d559f7bbadaad573a50b184bbc07f20a59534fc5595240cf4964736f6c63430008060033",
+    "sourceMap": "56:115:63:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;56:115:63;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x7300000000000000000000000000000000000000003014608060405260043610603d5760003560e01c806368fc68c7146042578063ad8710ad14605b575b600080fd5b6049600281565b60405190815260200160405180910390f35b604960018156fea2646970667358221220a5eac8da4b27d2d559f7bbadaad573a50b184bbc07f20a59534fc5595240cf4964736f6c63430008060033",
+    "sourceMap": "56:115:63:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;125:43;;167:1;125:43;;;;;168:25:136;;;156:2;141:18;125:43:63;;;;;;;83:38;;120:1;83:38;",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "ETH_PAYOUT()": "ad8710ad",
+    "RESERVED_TOKENS()": "68fc68c7"
+  },
+  "ast": {
+    "absolutePath": "lib/juice-contracts-v2/contracts/libraries/JBSplitsGroups.sol",
+    "id": 17574,
+    "exportedSymbols": {
+      "JBSplitsGroups": [
+        17573
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:140:63",
+    "nodes": [
+      {
+        "id": 17566,
+        "nodeType": "PragmaDirective",
+        "src": "32:22:63",
+        "literals": [
+          "solidity",
+          "0.8",
+          ".6"
+        ]
+      },
+      {
+        "id": 17573,
+        "nodeType": "ContractDefinition",
+        "src": "56:115:63",
+        "nodes": [
+          {
+            "id": 17569,
+            "nodeType": "VariableDeclaration",
+            "src": "83:38:63",
+            "constant": true,
+            "functionSelector": "ad8710ad",
+            "mutability": "constant",
+            "name": "ETH_PAYOUT",
+            "nameLocation": "107:10:63",
+            "scope": 17573,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 17567,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "83:7:63",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "hexValue": "31",
+              "id": 17568,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "120:1:63",
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_1_by_1",
+                "typeString": "int_const 1"
+              },
+              "value": "1"
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 17572,
+            "nodeType": "VariableDeclaration",
+            "src": "125:43:63",
+            "constant": true,
+            "functionSelector": "68fc68c7",
+            "mutability": "constant",
+            "name": "RESERVED_TOKENS",
+            "nameLocation": "149:15:63",
+            "scope": 17573,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 17570,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "125:7:63",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "hexValue": "32",
+              "id": 17571,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "167:1:63",
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_2_by_1",
+                "typeString": "int_const 2"
+              },
+              "value": "2"
+            },
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "library",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          17573
+        ],
+        "name": "JBSplitsGroups",
+        "nameLocation": "64:14:63",
+        "scope": 17574,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 63
+}

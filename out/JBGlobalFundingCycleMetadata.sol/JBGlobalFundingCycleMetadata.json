@@ -1,0 +1,159 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "lib/juice-contracts-v2/contracts/structs/JBGlobalFundingCycleMetadata.sol",
+    "id": 17740,
+    "exportedSymbols": {
+      "IERC165": [
+        28236
+      ],
+      "IJBFundingCycleBallot": [
+        15309
+      ],
+      "IJBFundingCycleDataSource": [
+        15349
+      ],
+      "IJBFundingCycleStore": [
+        15445
+      ],
+      "IJBPayDelegate": [
+        15548
+      ],
+      "IJBPaymentTerminal": [
+        15618
+      ],
+      "IJBRedemptionDelegate": [
+        16117
+      ],
+      "JBBallotState": [
+        14679
+      ],
+      "JBDidPayData": [
+        17606
+      ],
+      "JBDidRedeemData": [
+        17627
+      ],
+      "JBFundingCycle": [
+        17678
+      ],
+      "JBFundingCycleData": [
+        17691
+      ],
+      "JBGlobalFundingCycleMetadata": [
+        17739
+      ],
+      "JBPayParamsData": [
+        17786
+      ],
+      "JBRedeemParamsData": [
+        17826
+      ],
+      "JBTokenAmount": [
+        17873
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:414:72",
+    "nodes": [
+      {
+        "id": 17733,
+        "nodeType": "PragmaDirective",
+        "src": "32:22:72",
+        "literals": [
+          "solidity",
+          "0.8",
+          ".6"
+        ]
+      },
+      {
+        "id": 17734,
+        "nodeType": "ImportDirective",
+        "src": "56:55:72",
+        "absolutePath": "lib/juice-contracts-v2/contracts/interfaces/IJBFundingCycleDataSource.sol",
+        "file": "./../interfaces/IJBFundingCycleDataSource.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 17740,
+        "sourceUnit": 15350,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 17739,
+        "nodeType": "StructDefinition",
+        "src": "353:92:72",
+        "canonicalName": "JBGlobalFundingCycleMetadata",
+        "members": [
+          {
+            "constant": false,
+            "id": 17736,
+            "mutability": "mutable",
+            "name": "allowSetTerminals",
+            "nameLocation": "398:17:72",
+            "nodeType": "VariableDeclaration",
+            "scope": 17739,
+            "src": "393:22:72",
+            "stateVariable": false,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bool",
+              "typeString": "bool"
+            },
+            "typeName": {
+              "id": 17735,
+              "name": "bool",
+              "nodeType": "ElementaryTypeName",
+              "src": "393:4:72",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bool",
+                "typeString": "bool"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 17738,
+            "mutability": "mutable",
+            "name": "allowSetController",
+            "nameLocation": "424:18:72",
+            "nodeType": "VariableDeclaration",
+            "scope": 17739,
+            "src": "419:23:72",
+            "stateVariable": false,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bool",
+              "typeString": "bool"
+            },
+            "typeName": {
+              "id": 17737,
+              "name": "bool",
+              "nodeType": "ElementaryTypeName",
+              "src": "419:4:72",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bool",
+                "typeString": "bool"
+              }
+            },
+            "visibility": "internal"
+          }
+        ],
+        "name": "JBGlobalFundingCycleMetadata",
+        "nameLocation": "360:28:72",
+        "scope": 17740,
+        "visibility": "public"
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 72
+}
