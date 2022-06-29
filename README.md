@@ -1,12 +1,10 @@
-# juice-data-source
-
-## Notice
+# Juice Extension Templates
 
 This repo provides some implementation templates of peripheral contracts of the Juicebox V2 ecosystem, as well as some common implementation as examples.
 
-## Installation
+# Install Foundry
 
-This repo is powered by Forge. To install the latest version, follow the [instructions](https://github.com/foundry-rs/foundry):
+To get set up:
 
 1. Install [Foundry](https://github.com/gakonst/foundry).
 
@@ -14,21 +12,31 @@ This repo is powered by Forge. To install the latest version, follow the [instru
 curl -L https://foundry.paradigm.xyz | sh
 ```
 
-2. Update to the latest version
+2. Install external lib(s)
+
+```bash
+git submodule update --init && yarn install
+```
+
+then run
+
+```bash
+forge update
+```
+
+If git modules are failing to clone, not installing, etc (ie overall submodule misbehaving), use `git submodule update --init --recursive --force`
+
+3. Run tests:
+
+```bash
+forge test
+```
+
+4. Update Foundry periodically:
 
 ```bash
 foundryup
 ```
-
-3. Install external libs
-
-```bash
-git submodule update --init
-```
-
-Resources:
-
-- [The Forge-Book](https://book.getfoundry.sh)
 
 ## Content
 
@@ -47,12 +55,25 @@ This repo is organised as follow:
 
 Test for every extension are provided in contracts/test. Those test are using a complete Juicebox contracts deployment (provided in helpers/TestBaseWorkflow) without requiring a forked network.
 
-## Deploy
 
-Refer to the [Foundry Book](https://book.getfoundry.sh/forge/deploying.html) on deploying for advanced use.
+# Deploy & verify
 
-Example of deployment and etherscan verification:
+#### Setup
+
+Configure the .env variables, and add a mnemonic.txt file with the mnemonic of the deployer wallet. The sender address in the .env must correspond to the mnemonic account.
+
+## Rinkeby
 
 ```bash
-forge create --rpc-url RPC_NODE_URL -i --verify --constructor-args "FOO" 123 "BAR"
+yarn deploy-rinkeby
 ```
+
+## Mainnet
+
+```bash
+yarn deploy-mainnet
+```
+
+The deployments are stored in ./broadcast
+
+See the [Foundry Book for available options](https://book.getfoundry.sh/reference/forge/forge-create.html).
