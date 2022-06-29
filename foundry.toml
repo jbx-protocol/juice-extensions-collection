@@ -6,7 +6,6 @@ libs = ['lib']
 remappings = [
     '@jbx-protocol-v2=lib/juice-contracts-v2',
     '@openzeppelin=lib/openzeppelin-contracts',
-    'ds-test/=lib/ds-test/src/',
     'forge-std/=lib/forge-std/src/',
 ]
 libraries = []
