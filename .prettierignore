@@ -1,5 +1,7 @@
 node_modules
-artifacts
+broadcast
 cache
-coverage*
-gasReporterOutput.json
+out
+deployments
+lib
+contracts/tests/e2e/helpers
