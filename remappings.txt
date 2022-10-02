@@ -1,3 +1,6 @@
-@openzeppelin/=node_modules/@openzeppelin/
 @jbx-protocol/=node_modules/@jbx-protocol/
+@openzeppelin/=node_modules/@openzeppelin/
+@paulrberg/=node_modules/@paulrberg/
+@uniswap/=node_modules/@uniswap/
 forge-std/=lib/forge-std/src/
+prb-math/=node_modules/prb-math/
