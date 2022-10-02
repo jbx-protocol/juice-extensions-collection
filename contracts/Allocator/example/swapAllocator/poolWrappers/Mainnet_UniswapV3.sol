@@ -1,12 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
-import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBSplitAllocationData.sol';
-
-import './interfaces/ICurveRegistry.sol';
-import './interfaces/ICurvePool.sol';
-
 import '@uniswap/v3-core/contracts/libraries/TickMath.sol';
 import '@uniswap/v3-core/contracts/libraries/FixedPoint96.sol';
 import '@uniswap/v3-periphery/contracts/libraries/PoolAddress.sol';

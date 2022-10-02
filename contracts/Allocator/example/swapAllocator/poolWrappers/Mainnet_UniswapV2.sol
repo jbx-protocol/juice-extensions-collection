@@ -16,7 +16,29 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
   ) external view returns (uint256 _amountOut, address _pool) {
     _pool = _computePairAddressUniV2(_tokenIn, _tokenOut);
     (uint256 reserve0, uint256 reserve1, ) = IUniswapV2Pair(_pool).getReserves();
+
+    // reserve0 is the one for tokenIn
+    (reserve0, reserve1) = _tokenIn < _tokenOut ? (reserve0, reserve1) : (reserve1, reserve0);
+
     _amountOut = _computeAmountOutWithFee(_amountIn, reserve0, reserve1);
+  }
+
+  // _minOut already taking slippage into account (same for every pool, in the allocator itself)
+  // will revert 'K' if hit in pool.swap
+  function swap(
+    uint256 _amountIn,
+    address _tokenIn,
+    address _tokenOut,
+    uint256 _minOut,
+    address _pool
+  ) external {
+    IERC20(_tokenIn).transfer(_pool, _amountIn);
+
+    (uint256 amount0Out, uint256 amount1Out) = _tokenIn < _tokenOut
+      ? (_amountIn, _minOut)
+      : (_minOut, _amountIn);
+
+    IUniswapV2Pool(_pool).swap(amount0Out, amount1Out, msg.sender, new bytes(0));
   }
 
   function _computePairAddressUniV2(address _token0, address _token1)
@@ -24,7 +46,7 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     pure
     returns (address pair)
   {
-    (_token0, _token1) = MultiOracleLib.sortPairs(_token0, _token1);
+    (_token0, _token1) = _token0 < _token1 ? (_token0, _token1) : (_token1, _token0);
 
     bytes32 pubKey = keccak256(
       abi.encodePacked(

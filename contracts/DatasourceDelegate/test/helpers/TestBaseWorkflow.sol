@@ -1,38 +1,38 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.6;
+pragma solidity ^0.8.16;
 
 import 'ds-test/test.sol';
 import 'forge-std/Vm.sol';
 
-import '@jbx-protocol-v2/contracts/JBController.sol';
-import '@jbx-protocol-v2/contracts/JBDirectory.sol';
-import '@jbx-protocol-v2/contracts/JBETHPaymentTerminal.sol';
-import '@jbx-protocol-v2/contracts/JBERC20PaymentTerminal.sol';
-import '@jbx-protocol-v2/contracts/JBSingleTokenPaymentTerminalStore.sol';
-import '@jbx-protocol-v2/contracts/JBFundingCycleStore.sol';
-import '@jbx-protocol-v2/contracts/JBOperatorStore.sol';
-import '@jbx-protocol-v2/contracts/JBPrices.sol';
-import '@jbx-protocol-v2/contracts/JBProjects.sol';
-import '@jbx-protocol-v2/contracts/JBSplitsStore.sol';
-import '@jbx-protocol-v2/contracts/JBToken.sol';
-import '@jbx-protocol-v2/contracts/JBTokenStore.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBController.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBDirectory.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBETHPaymentTerminal.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBERC20PaymentTerminal.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBSingleTokenPaymentTerminalStore.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBFundingCycleStore.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBOperatorStore.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBPrices.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBProjects.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBSplitsStore.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBToken.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBTokenStore.sol';
 
-import '@jbx-protocol-v2/contracts/structs/JBDidPayData.sol';
-import '@jbx-protocol-v2/contracts/structs/JBDidRedeemData.sol';
-import '@jbx-protocol-v2/contracts/structs/JBFee.sol';
-import '@jbx-protocol-v2/contracts/structs/JBFundAccessConstraints.sol';
-import '@jbx-protocol-v2/contracts/structs/JBFundingCycle.sol';
-import '@jbx-protocol-v2/contracts/structs/JBFundingCycleData.sol';
-import '@jbx-protocol-v2/contracts/structs/JBFundingCycleMetadata.sol';
-import '@jbx-protocol-v2/contracts/structs/JBGroupedSplits.sol';
-import '@jbx-protocol-v2/contracts/structs/JBOperatorData.sol';
-import '@jbx-protocol-v2/contracts/structs/JBPayParamsData.sol';
-import '@jbx-protocol-v2/contracts/structs/JBProjectMetadata.sol';
-import '@jbx-protocol-v2/contracts/structs/JBRedeemParamsData.sol';
-import '@jbx-protocol-v2/contracts/structs/JBSplit.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidPayData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidRedeemData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFee.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundAccessConstraints.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycle.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBGroupedSplits.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBOperatorData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayParamsData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBProjectMetadata.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedeemParamsData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBSplit.sol';
 
-import '@jbx-protocol-v2/contracts/interfaces/IJBPaymentTerminal.sol';
-import '@jbx-protocol-v2/contracts/interfaces/IJBToken.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBToken.sol';
 
 import './AccessJBLib.sol';
 

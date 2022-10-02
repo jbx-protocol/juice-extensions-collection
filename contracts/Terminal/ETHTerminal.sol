@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.6;
+pragma solidity ^0.8.16;
 
-import '@jbx-protocol-v2/contracts/interfaces/IJBPaymentTerminal.sol';
-import '@jbx-protocol-v2/contracts/interfaces/IJBRedemptionTerminal.sol';
-import '@jbx-protocol-v2/contracts/libraries/JBCurrencies.sol';
-import '@jbx-protocol-v2/contracts/libraries/JBTokens.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBRedemptionTerminal.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBCurrencies.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBTokens.sol';
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
 
 contract ETHTerminal is IJBPaymentTerminal, IJBRedemptionTerminal, ERC165 {

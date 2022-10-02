@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.6;
+pragma solidity ^0.8.16;
 
-import '@jbx-protocol-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
-import '@jbx-protocol-v2/contracts/libraries/JBCurrencies.sol';
-import '@jbx-protocol-v2/contracts/libraries/JBTokens.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleDataSource.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBCurrencies.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBTokens.sol';
 
 import '@openzeppelin/contracts/interfaces/IERC721.sol';
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';

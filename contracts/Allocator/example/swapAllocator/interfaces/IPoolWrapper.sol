@@ -12,6 +12,8 @@ interface IPoolWrapper {
   function swap(
     uint256 _amountIn,
     address _tokenIn,
-    address _tokenOut
+    address _tokenOut,
+    uint256 _minOut,
+    address _pool
   ) external;
 }

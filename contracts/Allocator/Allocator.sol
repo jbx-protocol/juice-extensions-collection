@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.6;
+pragma solidity ^0.8.16;
 
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
-//import '@jbx-protocol-v2/contracts/interfaces/IJBSplitAllocator.sol';
-import '@jbx-protocol-v2/contracts/structs/JBSplitAllocationData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBSplitAllocationData.sol';
 
 /**
  @title
