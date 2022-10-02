@@ -10,6 +10,7 @@ remappings = [
     '@uniswap=node_modules/@uniswap',
     'prb-math=node_modules/prb-math',
     'forge-std/=lib/forge-std/src/',
+    'ds-test=lib/ds-test/src/',
 ]
 libraries = []
 cache = true

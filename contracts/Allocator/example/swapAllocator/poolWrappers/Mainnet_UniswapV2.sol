@@ -3,6 +3,7 @@ pragma solidity ^0.8.16;
 
 import '../interfaces/IPoolWrapper.sol';
 import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 /**
  @title
@@ -38,7 +39,7 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
       ? (_amountIn, _minOut)
       : (_minOut, _amountIn);
 
-    IUniswapV2Pool(_pool).swap(amount0Out, amount1Out, msg.sender, new bytes(0));
+    IUniswapV2Pair(_pool).swap(amount0Out, amount1Out, msg.sender, new bytes(0));
   }
 
   function _computePairAddressUniV2(address _token0, address _token1)
