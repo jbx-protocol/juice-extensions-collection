@@ -178,7 +178,12 @@ contract TestBaseWorkflow is DSTest {
     evm.label(address(_jbDirectory), 'JBDirectory');
 
     // JBTokenStore
-    _jbTokenStore = new JBTokenStore(_jbOperatorStore, _jbProjects, _jbDirectory);
+    _jbTokenStore = new JBTokenStore(
+      _jbOperatorStore,
+      _jbProjects,
+      _jbDirectory,
+      _jbFundingCycleStore
+    );
     evm.label(address(_jbTokenStore), 'JBTokenStore');
 
     // JBSplitsStore
@@ -224,7 +229,7 @@ contract TestBaseWorkflow is DSTest {
     evm.label(address(_jbETHPaymentTerminal), 'JBETHPaymentTerminal');
 
     evm.prank(_multisig);
-    _jbToken = new JBToken('MyToken', 'MT');
+    _jbToken = new JBToken('MyToken', 'MT', 69);
 
     evm.prank(_multisig);
     _jbToken.mint(0, _multisig, 100 * 10**18);
@@ -234,7 +239,7 @@ contract TestBaseWorkflow is DSTest {
       _jbToken,
       _accessJBLib.ETH(), // currency
       _accessJBLib.ETH(), // base weight currency
-      1, // JBSplitsGroupe
+      1, // JBSplitsGroup
       _jbOperatorStore,
       _jbProjects,
       _jbDirectory,
