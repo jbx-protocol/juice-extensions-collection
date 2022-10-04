@@ -18,26 +18,26 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     _pool = _computePairAddressUniV2(_tokenIn, _tokenOut);
     (uint256 reserve0, uint256 reserve1, ) = IUniswapV2Pair(_pool).getReserves();
 
-    // reserve0 is the one for tokenIn
+    // reserve0 is the tokenIn
     (reserve0, reserve1) = _tokenIn < _tokenOut ? (reserve0, reserve1) : (reserve1, reserve0);
 
     _amountOut = _computeAmountOutWithFee(_amountIn, reserve0, reserve1);
   }
 
-  // _minOut already taking slippage into account (same for every pool, in the allocator itself)
-  // will revert 'K' if hit in pool.swap
   function swap(
     uint256 _amountIn,
     address _tokenIn,
     address _tokenOut,
-    uint256 _minOut,
+    uint256 _amountOut,
     address _pool
   ) external {
+    // Optimistically transfer the token in
     IERC20(_tokenIn).transfer(_pool, _amountIn);
 
+    // Compute the amount out,
     (uint256 amount0Out, uint256 amount1Out) = _tokenIn < _tokenOut
-      ? (_amountIn, _minOut)
-      : (_minOut, _amountIn);
+      ? (uint256(0), _amountOut)
+      : (_amountOut, uint256(0));
 
     IUniswapV2Pair(_pool).swap(amount0Out, amount1Out, msg.sender, new bytes(0));
   }

@@ -13,7 +13,7 @@ interface IPoolWrapper {
     uint256 _amountIn,
     address _tokenIn,
     address _tokenOut,
-    uint256 _minOut,
+    uint256 _amountOut,
     address _pool
   ) external;
 }

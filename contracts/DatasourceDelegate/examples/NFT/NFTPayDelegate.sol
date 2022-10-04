@@ -21,7 +21,7 @@ contract NFTRewards is ERC721URIStorage, IJBPayDelegate {
     terminal = _terminal;
   }
 
-  function didPay(JBDidPayData calldata _param) public override {
+  function didPay(JBDidPayData calldata _param) public payable override {
     if (msg.sender != terminal) revert unAuth();
 
     _tokenIds.increment();
