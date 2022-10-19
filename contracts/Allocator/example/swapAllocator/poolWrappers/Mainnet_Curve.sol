@@ -32,18 +32,24 @@ contract Mainnet_curve is IPoolWrapper {
     address _tokenIn,
     address _tokenOut
   ) external view returns (uint256 _amountOut, address _pool) {
-    // Find the pool for the assets - TODO: hardcode addresses, including pool
+    // Find the pool for the assets
     _pool = ICurveRegistry(registry).find_pool_for_coins(_tokenIn, _tokenOut, 0);
 
-    // Get the token indices within the Curve pool
-    (int128 fromIndex, int128 toIndex, ) = ICurveRegistry(registry).get_coin_indices(
-      _pool,
-      _tokenIn,
-      _tokenOut
-    );
+    // No pool for tokens?
+    if (_pool == address(0)) {
+      _amountOut = 0;
+    }
+    else {  
+      // Get the token indices within the Curve pool
+      (int128 fromIndex, int128 toIndex, ) = ICurveRegistry(registry).get_coin_indices(
+        _pool,
+        _tokenIn,
+        _tokenOut
+      );
 
-    // Get a quote (ie dy for a given dx)
-    _amountOut = ICurvePool(_pool).get_dy(fromIndex, toIndex, _amountIn);
+      // Get a quote (ie dy for a given dx)
+      _amountOut = ICurvePool(_pool).get_dy(fromIndex, toIndex, _amountIn);
+    }
   }
 
   function swap(

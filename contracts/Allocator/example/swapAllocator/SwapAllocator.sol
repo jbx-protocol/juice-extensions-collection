@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
+import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBSplitAllocationData.sol';
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 import './interfaces/IPoolWrapper.sol';
 import './interfaces/ICurveRegistry.sol';
@@ -21,7 +22,10 @@ import '@uniswap/v3-periphery/contracts/libraries/PoolAddress.sol';
 
  @notice
 */
-contract SwapAllocator is ERC165, IJBSplitAllocator {
+contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
+  event NewDex(IPoolWrapper);
+  event RemoveDex(IPoolWrapper);
+
   // All the dexes for this allocator token tuple
   IPoolWrapper[] public dexes;
 
@@ -41,14 +45,41 @@ contract SwapAllocator is ERC165, IJBSplitAllocator {
     beneficiary = _beneficiary;
   }
 
+  function addDex(IPoolWrapper _newDex) external onlyOwner {
+    dexes.push(_newDex);
+    emit NewDex(_newDex);
+  }
+
+  function removeDex(IPoolWrapper _dexToRemove) external onlyOwner {
+
+    uint256 _numberOfDexes = dexes.length;
+    IPoolWrapper _currentWrapper;
+
+    for(uint i; i < _numberOfDexes;) {
+      _currentWrapper = dexes[i];
+
+      // Swap and pop
+      if(_currentWrapper == _dexToRemove) {
+        dexes[i] = dexes[_numberOfDexes - 1];
+        dexes.pop();
+      }
+
+      unchecked {
+        ++i;
+      }
+    }
+
+    emit RemoveDex(_dexToRemove);
+  }
+
   //@inheritdoc IJBAllocator
   function allocate(JBSplitAllocationData calldata _data) external payable override {
-    // Get best quote between Curve and Uniswap (others can be added)
     uint256 _amountIn = _data.amount;
     address _tokenIn = _data.token;
     address _tokenOut = tokenOut;
 
-    // Keep record of the best pool wrapper
+    // Keep record of the best pool wrapper. The pool address is passed to avoid having
+    // to find it again in the wrapper
     address _bestPool;
     uint256 _bestQuote;
     IPoolWrapper _bestWrapper;
@@ -73,6 +104,8 @@ contract SwapAllocator is ERC165, IJBSplitAllocator {
         ++i;
       }
     }
+
+    if(_bestQuote != 0) {
     // Send the token to the best pool wrapper...
     IERC20(_tokenIn).transfer(address(_bestWrapper), _amountIn);
 
@@ -81,6 +114,9 @@ contract SwapAllocator is ERC165, IJBSplitAllocator {
 
     // wrapper.swap will send the token back here, transfer them to the beneficiary
     IERC20(_tokenOut).transfer(beneficiary, IERC20(_tokenOut).balanceOf(address(this)));
+    }
+    // If no swap was performed, send the original token to the beneficiary
+    else IERC20(_tokenIn).transfer(beneficiary, _amountIn);
   }
 
   function supportsInterface(bytes4 _interfaceId)
