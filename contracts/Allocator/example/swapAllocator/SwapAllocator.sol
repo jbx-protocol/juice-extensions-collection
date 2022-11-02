@@ -4,6 +4,7 @@ pragma solidity ^0.8.16;
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
+
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBSplitAllocationData.sol';
 
 import './interfaces/IPoolWrapper.sol';
@@ -21,6 +22,8 @@ import '@uniswap/v3-periphery/contracts/libraries/PoolAddress.sol';
  Juicebox split allocator - swap to another asset
 
  @notice
+
+ @dev does NOT support fee on transfer token
 */
 contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
   event NewDex(IPoolWrapper);
@@ -32,17 +35,12 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
   // The token which should be distributed to the beneficiary
   address tokenOut;
 
-  // The beneficiary of this split allocator
-  address beneficiary;
-
   constructor(
     address _tokenOut,
-    IPoolWrapper[] memory _dexes,
-    address _beneficiary
+    IPoolWrapper[] memory _dexes
   ) {
     dexes = _dexes;
     tokenOut = _tokenOut;
-    beneficiary = _beneficiary;
   }
 
   function addDex(IPoolWrapper _newDex) external onlyOwner {
@@ -51,7 +49,6 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
   }
 
   function removeDex(IPoolWrapper _dexToRemove) external onlyOwner {
-
     uint256 _numberOfDexes = dexes.length;
     IPoolWrapper _currentWrapper;
 
@@ -62,6 +59,7 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
       if(_currentWrapper == _dexToRemove) {
         dexes[i] = dexes[_numberOfDexes - 1];
         dexes.pop();
+        break;
       }
 
       unchecked {
@@ -77,6 +75,7 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
     uint256 _amountIn = _data.amount;
     address _tokenIn = _data.token;
     address _tokenOut = tokenOut;
+    address _beneficiary = _data.split.beneficiary;
 
     // Keep record of the best pool wrapper. The pool address is passed to avoid having
     // to find it again in the wrapper
@@ -106,17 +105,17 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
     }
 
     if(_bestQuote != 0) {
-    // Send the token to the best pool wrapper...
-    IERC20(_tokenIn).transfer(address(_bestWrapper), _amountIn);
+      // Approve the token to the best pool wrapper...
+      IERC20(_tokenIn).approve(address(_bestWrapper), _amountIn);
 
-    // ... And swap them - there is no slippage involved, as quote and swap are atomic
-    _bestWrapper.swap(_amountIn, _tokenIn, _tokenOut, _bestQuote, _bestPool);
+      // ... And swap them - there is no slippage involved, as quote and swap are atomic
+      uint256 _amountReceived = _bestWrapper.swap(_amountIn, _tokenIn, _tokenOut, _bestQuote, _bestPool);
 
-    // wrapper.swap will send the token back here, transfer them to the beneficiary
-    IERC20(_tokenOut).transfer(beneficiary, IERC20(_tokenOut).balanceOf(address(this)));
+      // Transfer the token to the beneficiary
+      IERC20(_tokenOut).transferFrom(address(_bestWrapper), _beneficiary, _amountReceived);
     }
     // If no swap was performed, send the original token to the beneficiary
-    else IERC20(_tokenIn).transfer(beneficiary, _amountIn);
+    else IERC20(_tokenIn).transfer(_beneficiary, _amountIn);
   }
 
   function supportsInterface(bytes4 _interfaceId)

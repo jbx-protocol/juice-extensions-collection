@@ -15,5 +15,5 @@ interface IPoolWrapper {
     address _tokenOut,
     uint256 _amountOut,
     address _pool
-  ) external;
+  ) external returns (uint256 _amountReceived);
 }

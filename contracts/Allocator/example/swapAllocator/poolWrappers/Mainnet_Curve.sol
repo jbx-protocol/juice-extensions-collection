@@ -58,7 +58,10 @@ contract Mainnet_curve is IPoolWrapper {
     address _tokenOut,
     uint256 _amountOut,
     address _pool
-  ) external {
+  ) external returns (uint256 _amountReceived){
+    // Pull the token
+    IERC20(_tokenOut).transferFrom(msg.sender, address(this), _amountIn);
+
     // Get the token indicex in the pool
     (int128 i, int128 j, ) = ICurveRegistry(registry).get_coin_indices(_pool, _tokenIn, _tokenOut);
 
@@ -66,9 +69,9 @@ contract Mainnet_curve is IPoolWrapper {
     IERC20(_tokenIn).approve(_pool, _amountIn);
 
     // Swap - no slippage allowed, as the quote and swap are atomic
-    ICurvePool(_pool).exchange(i, j, _amountIn, _amountOut);
+    _amountReceived = ICurvePool(_pool).exchange(i, j, _amountIn, _amountOut);
 
-    // Send the token received (slippage is controlled by the curve pool)
-    IERC20(_tokenOut).transfer(msg.sender, IERC20(_tokenOut).balanceOf(address(this)));
+    // Approve the token received
+    IERC20(_tokenOut).approve(msg.sender, _amountReceived);
   }
 }

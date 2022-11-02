@@ -35,9 +35,9 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     address _tokenOut,
     uint256 _amountOut,
     address _pool
-  ) external {
-    // Optimistically transfer the token in
-    IERC20(_tokenIn).transfer(_pool, _amountIn);
+  ) external returns (uint256 _amountReceived){
+    // Optimistically transfer the token in to the pool
+    IERC20(_tokenOut).transferFrom(msg.sender, _pool, _amountIn);
 
     // Compute the amount out,
     (uint256 amount0Out, uint256 amount1Out) = _tokenIn < _tokenOut
@@ -45,6 +45,11 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
       : (_amountOut, uint256(0));
 
     IUniswapV2Pair(_pool).swap(amount0Out, amount1Out, msg.sender, new bytes(0));
+
+    _amountReceived = IERC20(_tokenOut).balanceOf(address(this));
+
+    // Approve the token received
+    IERC20(_tokenOut).approve(msg.sender, _amountReceived);
   }
 
   function _computePairAddressUniV2(address _token0, address _token1)
