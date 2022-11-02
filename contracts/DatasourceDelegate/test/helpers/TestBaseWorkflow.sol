@@ -231,9 +231,6 @@ contract TestBaseWorkflow is DSTest {
     evm.prank(_multisig);
     _jbToken = new JBToken('MyToken', 'MT', 69);
 
-    evm.prank(_multisig);
-    _jbToken.mint(0, _multisig, 100 * 10**18);
-
     // JBERC20PaymentTerminal
     _jbERC20PaymentTerminal = new JBERC20PaymentTerminal(
       _jbToken,
