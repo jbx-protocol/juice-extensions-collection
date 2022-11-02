@@ -6,6 +6,7 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
 
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBSplitAllocationData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBTokens.sol';
 
 import './interfaces/IPoolWrapper.sol';
 import './interfaces/ICurveRegistry.sol';
@@ -99,17 +100,21 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
     }
 
     if(_bestQuote != 0) {
-      // Approve the token to the best pool wrapper...
-      IERC20(_tokenIn).approve(address(_bestWrapper), _amountIn);
+      // If ERC20, approve the wrapper
+      if(_tokenIn != JBTokens.ETH) IERC20(_tokenIn).approve(address(_bestWrapper), _amountIn);
 
-      // ... And swap them - there is no slippage involved, as quote and swap are atomic
-      uint256 _amountReceived = _bestWrapper.swap(_amountIn, _tokenIn, _tokenOut, _bestQuote, _bestPool);
+      // Call swap with the appropriate value
+      uint256 _amountReceived = _bestWrapper.swap{value: _tokenIn == JBTokens.ETH ? _amountIn : 0}(_amountIn, _tokenIn, _tokenOut, _bestQuote, _bestPool);
 
-      // Transfer the token to the beneficiary
-      IERC20(_tokenOut).transferFrom(address(_bestWrapper), _beneficiary, _amountReceived);
+      // Send the eth or token received to the beneficiary
+      if(_tokenOut == JBTokens.ETH) payable(_beneficiary).transfer(address(this).balance);
+      else IERC20(_tokenOut).transferFrom(address(_bestWrapper), _beneficiary, _amountReceived); // Transfer the token to the beneficiary
     }
+
     // If no swap was performed, send the original token to the beneficiary
-    else IERC20(_tokenIn).transfer(_beneficiary, _amountIn);
+    else 
+      if(_tokenIn == JBTokens.ETH) payable(_beneficiary).transfer(msg.value); 
+      else IERC20(_tokenIn).transfer(_beneficiary, _amountIn);
   }
 
   function supportsInterface(bytes4 _interfaceId)

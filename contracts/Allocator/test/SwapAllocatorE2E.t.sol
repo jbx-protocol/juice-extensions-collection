@@ -78,6 +78,9 @@ contract SwapAllocator_e2eTest is TestBaseWorkflow {
       metadata: 0
     });
 
+    evm.prank(multisig());
+    _terminal.setFee(0);
+
     _terminals.push(_terminal);
 
     _fundAccessConstraints.push(
@@ -108,7 +111,7 @@ contract SwapAllocator_e2eTest is TestBaseWorkflow {
       allocator: _allocator // allocator should prevail on beneficiary and projectId
     });
 
-    _groupedSplits[0] = JBGroupedSplits({ group: 0, splits: _splits });
+    _groupedSplits[0] = JBGroupedSplits({ group: 1, splits: _splits });
 
     _projectId = _controller.launchProjectFor(
       _projectOwner,
@@ -138,7 +141,18 @@ contract SwapAllocator_e2eTest is TestBaseWorkflow {
     );
   }
 
-  function test() public {
+  /**
+    @dev Should swap using the _pool2 as it returns 1 more token
+  */
+  function test_distributeWithTwoPools() public {
+    vm.mockCall(_pool1, abi.encodeCall(IPoolWrapper.getQuote, (1 ether, jbLibraries().ETHToken(), _tokenOut)), abi.encode(100, _pool1));
+    vm.mockCall(_pool2, abi.encodeCall(IPoolWrapper.getQuote, (1 ether, jbLibraries().ETHToken(), _tokenOut)), abi.encode(101, _pool2));
+
+    vm.mockCall(_pool1, abi.encodeCall(IPoolWrapper.getQuote, (1 ether, jbLibraries().ETHToken(), _tokenOut)), abi.encode(100, _pool1));
+
+
     _terminal.distributePayoutsOf(_projectId, 1 ether, jbLibraries().ETH(), jbLibraries().ETHToken(), 0, 'payout');
   }
+
+
 }

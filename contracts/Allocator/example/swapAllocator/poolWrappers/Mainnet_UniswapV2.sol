@@ -35,7 +35,7 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     address _tokenOut,
     uint256 _amountOut,
     address _pool
-  ) external returns (uint256 _amountReceived){
+  ) external payable returns (uint256 _amountReceived){
     // Optimistically transfer the token in to the pool
     IERC20(_tokenOut).transferFrom(msg.sender, _pool, _amountIn);
 
