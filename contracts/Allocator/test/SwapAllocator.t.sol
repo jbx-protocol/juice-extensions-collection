@@ -4,10 +4,12 @@ pragma solidity ^0.8.16;
 import './helpers/TestBaseWorkflow.sol';
 import { SwapAllocator, IPoolWrapper } from '../example/swapAllocator/SwapAllocator.sol';
 
-contract SwapAllocator_e2eTest is TestBaseWorkflow {
+contract SwapAllocator_Test is TestBaseWorkflow {
   SwapAllocator _allocator;
   IPoolWrapper[] _dexes;
   address _tokenOut;
+  address _poolWrapper1;
+  address _poolWrapper2;
   address _pool1;
   address _pool2;
   address payable _beneficiary;
@@ -34,10 +36,14 @@ contract SwapAllocator_e2eTest is TestBaseWorkflow {
     JBGroupedSplits[] memory  _groupedSplits = new JBGroupedSplits[](1);
 
     _tokenOut = makeAddr('_tokenOut');
+    _poolWrapper1 = makeAddr('_poolWrapper1');
+    _poolWrapper2 = makeAddr('_poolWrapper2');
     _pool1 = makeAddr('_pool1');
     _pool2 = makeAddr('_pool2');
     _beneficiary =  payable(makeAddr('_beneficiary'));
 
+    vm.etch(_poolWrapper1, new bytes(69));
+    vm.etch(_poolWrapper2, new bytes(69));
     vm.etch(_pool1, new bytes(69));
     vm.etch(_pool2, new bytes(69));
 
@@ -96,8 +102,8 @@ contract SwapAllocator_e2eTest is TestBaseWorkflow {
 
     _projectOwner = multisig();
 
-    _dexes.push(IPoolWrapper(_pool1));
-    _dexes.push(IPoolWrapper(_pool2));
+    _dexes.push(IPoolWrapper(_poolWrapper1));
+    _dexes.push(IPoolWrapper(_poolWrapper2));
 
     _allocator = new SwapAllocator(_tokenOut, _dexes);
 
@@ -142,15 +148,48 @@ contract SwapAllocator_e2eTest is TestBaseWorkflow {
   }
 
   /**
-    @dev Should swap using the _pool2 as it returns 1 more token
+    @dev Should swap using the _poolWrapper2 as it returns 1 more token
   */
-  function test_distributeWithTwoPools() public {
-    vm.mockCall(_pool1, abi.encodeCall(IPoolWrapper.getQuote, (1 ether, jbLibraries().ETHToken(), _tokenOut)), abi.encode(100, _pool1));
-    vm.mockCall(_pool2, abi.encodeCall(IPoolWrapper.getQuote, (1 ether, jbLibraries().ETHToken(), _tokenOut)), abi.encode(101, _pool2));
+  function test_distributeWithTwoPools(uint128 amount1, uint128 amount2) public {
+    // Avoid silly overflow
+    vm.assume(uint256(amount1) + uint256(amount2) <= type(uint128).max);
 
-    vm.mockCall(_pool1, abi.encodeCall(IPoolWrapper.getQuote, (1 ether, jbLibraries().ETHToken(), _tokenOut)), abi.encode(100, _pool1));
+    // The best amount out possible (either amount 1 or 2)
+    uint128 _bestAmountOut = amount1 > amount2 ? amount1 : amount2;
+    address _bestWrapper = amount1 > amount2 ? _poolWrapper1 : _poolWrapper2;
 
+    // Mock the quote
+    vm.mockCall(_poolWrapper1, abi.encodeCall(IPoolWrapper.getQuote, (1 ether, jbLibraries().ETHToken(), _tokenOut)), abi.encode(amount1, _pool1));
+    vm.mockCall(_poolWrapper2, abi.encodeCall(IPoolWrapper.getQuote, (1 ether, jbLibraries().ETHToken(), _tokenOut)), abi.encode(amount2, _pool2));
 
+    // Mock the actual swap
+    vm.mockCall(
+      _bestWrapper,
+      abi.encodeCall(
+        IPoolWrapper.swap,
+        (1 ether, jbLibraries().ETHToken(), _tokenOut, _bestAmountOut, amount1 > amount2 ? _pool1 : _pool2)
+      ),
+      abi.encode(_bestAmountOut)
+    );
+    
+    // Mock the transfer from the wrapper to the beneficiary
+    vm.mockCall(_tokenOut, abi.encodeCall(IERC20.transferFrom, (_bestWrapper, _beneficiary, _bestAmountOut)), abi.encode(true));
+   
+    // --- Test ---
+
+    // Check: call for a quote on every wrapper?
+    vm.expectCall(_poolWrapper1, abi.encodeCall(IPoolWrapper.getQuote, (1 ether, jbLibraries().ETHToken(), _tokenOut)));
+    vm.expectCall(_poolWrapper2, abi.encodeCall(IPoolWrapper.getQuote, (1 ether, jbLibraries().ETHToken(), _tokenOut)));
+
+    if(_bestAmountOut != 0) {
+      // Check: call to swap on the correct pool?  
+      vm.expectCall(_bestWrapper, abi.encodeCall(IPoolWrapper.swap, (1 ether, jbLibraries().ETHToken(), _tokenOut, _bestAmountOut, _pool2)));
+
+      // Check: transfer the correct token to the beneficiary (if a swap was performed)?
+      vm.expectCall(_tokenOut, abi.encodeCall(IERC20.transferFrom, (_bestWrapper, _beneficiary, _bestAmountOut)));
+    }
+    //else check eth balance 
+    
     _terminal.distributePayoutsOf(_projectId, 1 ether, jbLibraries().ETH(), jbLibraries().ETHToken(), 0, 'payout');
   }
 
