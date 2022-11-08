@@ -147,9 +147,6 @@ contract SwapAllocator_Test is TestBaseWorkflow {
     );
   }
 
-  /**
-    @dev Should swap using the _poolWrapper2 as it returns 1 more token
-  */
   function test_distributeWithTwoPools(uint128 amount1, uint128 amount2) public {
     // Avoid silly overflow
     vm.assume(uint256(amount1) + uint256(amount2) <= type(uint128).max);
@@ -189,10 +186,12 @@ contract SwapAllocator_Test is TestBaseWorkflow {
       // Check: transfer the correct token to the beneficiary (if a swap was performed)?
       vm.expectCall(_tokenOut, abi.encodeCall(IERC20.transferFrom, (_bestWrapper, _beneficiary, _bestAmountOut)));
     }
-    //else check eth balance 
-    
-    _terminal.distributePayoutsOf(_projectId, 1 ether, jbLibraries().ETH(), jbLibraries().ETHToken(), 0, 'payout');
-  }
+    //else check eth balance (token out == token in)
+    uint256 _balanceBefore = _beneficiary.balance;
 
+    _terminal.distributePayoutsOf(_projectId, 1 ether, jbLibraries().ETH(), jbLibraries().ETHToken(), 0, 'payout');
+
+    if (_bestAmountOut == 0) assertEq(_balanceBefore + _beneficiary.balance, 1 ether);
+  }
 
 }
