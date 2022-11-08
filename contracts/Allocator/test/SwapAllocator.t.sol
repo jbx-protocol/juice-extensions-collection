@@ -153,6 +153,7 @@ contract SwapAllocator_Test is TestBaseWorkflow {
   function test_distributeWithTwoPools(uint128 amount1, uint128 amount2) public {
     // Avoid silly overflow
     vm.assume(uint256(amount1) + uint256(amount2) <= type(uint128).max);
+    vm.assume(amount1 != amount2);
 
     // The best amount out possible (either amount 1 or 2)
     uint128 _bestAmountOut = amount1 > amount2 ? amount1 : amount2;
@@ -183,7 +184,7 @@ contract SwapAllocator_Test is TestBaseWorkflow {
 
     if(_bestAmountOut != 0) {
       // Check: call to swap on the correct pool?  
-      vm.expectCall(_bestWrapper, abi.encodeCall(IPoolWrapper.swap, (1 ether, jbLibraries().ETHToken(), _tokenOut, _bestAmountOut, _pool2)));
+      vm.expectCall(_bestWrapper, abi.encodeCall(IPoolWrapper.swap, (1 ether, jbLibraries().ETHToken(), _tokenOut, _bestAmountOut, amount1 > amount2 ? _pool1 : _pool2)));
 
       // Check: transfer the correct token to the beneficiary (if a swap was performed)?
       vm.expectCall(_tokenOut, abi.encodeCall(IERC20.transferFrom, (_bestWrapper, _beneficiary, _bestAmountOut)));
