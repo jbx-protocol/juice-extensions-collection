@@ -110,7 +110,7 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
       if(_tokenOut == JBTokens.ETH) payable(_beneficiary).transfer(address(this).balance);
       else IERC20(_tokenOut).transferFrom(address(_bestWrapper), _beneficiary, _amountReceived); // Transfer the token to the beneficiary
     }
-
+// TODO: _amountReceived == 0 -> tranfer tokenIn (then non-blocking logic in swap wrapper)
     // If no swap was performed, send the original token to the beneficiary
     else 
       if(_tokenIn == JBTokens.ETH) payable(_beneficiary).transfer(msg.value); 

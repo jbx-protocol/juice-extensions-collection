@@ -191,6 +191,7 @@ contract SwapAllocator_Test is TestBaseWorkflow {
 
     _terminal.distributePayoutsOf(_projectId, 1 ether, jbLibraries().ETH(), jbLibraries().ETHToken(), 0, 'payout');
 
+    // If no swap, check eth balance
     if (_bestAmountOut == 0) assertEq(_balanceBefore + _beneficiary.balance, 1 ether);
   }
 

@@ -29,6 +29,8 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     }
   }
 
+// TODO: _amountReceived == 0 -> tranfer tokenIn (then non-blocking logic in swap wrapper)
+
   function swap(
     uint256 _amountIn,
     address _tokenIn,
