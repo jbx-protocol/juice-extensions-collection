@@ -2,7 +2,9 @@
 pragma solidity ^0.8.16;
 
 import '../interfaces/IPoolWrapper.sol';
+
 import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
+
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 /**
@@ -10,18 +12,25 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
  @notice
 */
 contract Mainnet_UniswapV2 is IPoolWrapper {
+
+  address immutable factory; 
+
+  constructor(address _factory) {
+    factory = _factory; // uniV2 mainnet 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f
+  }
+
   function getQuote(
     uint256 _amountIn,
     address _tokenIn,
     address _tokenOut
   ) external view returns (uint256 _amountOut, address _pool) {
-    _pool = _computePairAddressUniV2(_tokenIn, _tokenOut);
+    _pool = _pairFor(_tokenIn, _tokenOut);
 
     try IUniswapV2Pair(_pool).getReserves() returns (uint112 reserve0, uint112 reserve1, uint32) {
       // reserve0 is the tokenIn
       (reserve0, reserve1) = _tokenIn < _tokenOut ? (reserve0, reserve1) : (reserve1, reserve0);
 
-      _amountOut = _computeAmountOutWithFee(_amountIn, reserve0, reserve1);
+      _amountOut = _getAmountOut(_amountIn, reserve0, reserve1);
     }
     catch { // No pool for this token
       _amountOut = 0;
@@ -29,7 +38,7 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     }
   }
 
-// TODO: _amountReceived == 0 -> tranfer tokenIn (then non-blocking logic in swap wrapper)
+// TODO: _amountReceived == 0 -> tranfer tokenIn (then non-blocking logic in swap wrapper, add try-catch)
 
   function swap(
     uint256 _amountIn,
@@ -41,7 +50,7 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     // Optimistically transfer the token in to the pool
     IERC20(_tokenOut).transferFrom(msg.sender, _pool, _amountIn);
 
-    // Compute the amount out,
+    // Assign the amount out,
     (uint256 amount0Out, uint256 amount1Out) = _tokenIn < _tokenOut
       ? (uint256(0), _amountOut)
       : (_amountOut, uint256(0));
@@ -54,9 +63,9 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     IERC20(_tokenOut).approve(msg.sender, _amountReceived);
   }
 
-  function _computePairAddressUniV2(address _token0, address _token1)
+  function _pairFor(address _token0, address _token1)
     internal
-    pure
+    view
     returns (address pair)
   {
     (_token0, _token1) = _token0 < _token1 ? (_token0, _token1) : (_token1, _token0);
@@ -64,7 +73,7 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     bytes32 pubKey = keccak256(
       abi.encodePacked(
         hex'ff',
-        address(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f), // UniV2 Factory
+        factory,
         keccak256(abi.encodePacked(_token0, _token1)),
         hex'96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f' // init code hash
       )
@@ -73,7 +82,7 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     pair = address(bytes20(pubKey));
   }
 
-  function _computeAmountOutWithFee(
+  function _getAmountOut(
     uint256 amountIn,
     uint256 reserveIn,
     uint256 reserveOut

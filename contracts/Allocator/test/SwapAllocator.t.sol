@@ -147,7 +147,7 @@ contract SwapAllocator_Test is TestBaseWorkflow {
     );
   }
 
-  function test_distributeWithTwoPools(uint128 amount1, uint128 amount2) public {
+  function test_allocate_distributeWithTwoPools(uint128 amount1, uint128 amount2) public {
     // Avoid silly overflow
     vm.assume(uint256(amount1) + uint256(amount2) <= type(uint128).max);
     vm.assume(amount1 != amount2);
@@ -194,5 +194,10 @@ contract SwapAllocator_Test is TestBaseWorkflow {
     // If no swap, check eth balance
     if (_bestAmountOut == 0) assertEq(_balanceBefore + _beneficiary.balance, 1 ether);
   }
+
+  function test_allocate_sendTokenInIfNoQuote() public {}
+
+  function test_allocate_sendTokenInIfNoSwap() public {}
+
 
 }

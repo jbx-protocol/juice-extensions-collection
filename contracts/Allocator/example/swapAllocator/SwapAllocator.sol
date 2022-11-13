@@ -21,6 +21,7 @@ import './interfaces/ICurvePool.sol';
  @dev does NOT support fee on transfer token
 */
 contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
+  event SwapAllocated(address indexed beneficiary, address tokenIn, address tokenOut, uint256 amountIn, uint256 amountOut);
   event NewDex(IPoolWrapper);
   event RemoveDex(IPoolWrapper);
 
@@ -99,22 +100,35 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
       }
     }
 
+    uint256 _amountReceived;
+
+    // If a swap should be possible, do it
     if(_bestQuote != 0) {
       // If ERC20, approve the wrapper
       if(_tokenIn != JBTokens.ETH) IERC20(_tokenIn).approve(address(_bestWrapper), _amountIn);
 
       // Call swap with the appropriate value
-      uint256 _amountReceived = _bestWrapper.swap{value: _tokenIn == JBTokens.ETH ? _amountIn : 0}(_amountIn, _tokenIn, _tokenOut, _bestQuote, _bestPool);
+      _amountReceived = _bestWrapper.swap{value: _tokenIn == JBTokens.ETH ? _amountIn : 0}(_amountIn, _tokenIn, _tokenOut, _bestQuote, _bestPool);
+    }
 
+    // If the swap was succesful, transfer token
+    if(_amountReceived != 0) {
       // Send the eth or token received to the beneficiary
       if(_tokenOut == JBTokens.ETH) payable(_beneficiary).transfer(address(this).balance);
       else IERC20(_tokenOut).transferFrom(address(_bestWrapper), _beneficiary, _amountReceived); // Transfer the token to the beneficiary
     }
-// TODO: _amountReceived == 0 -> tranfer tokenIn (then non-blocking logic in swap wrapper)
-    // If no swap was performed, send the original token to the beneficiary
+    // If no swap was performed (no best quote or received 0), send the original token to the beneficiary
     else 
       if(_tokenIn == JBTokens.ETH) payable(_beneficiary).transfer(msg.value); 
       else IERC20(_tokenIn).transfer(_beneficiary, _amountIn);
+
+    emit SwapAllocated({
+      beneficiary: _beneficiary,
+      tokenIn: _tokenIn,
+      tokenOut: _tokenOut,
+      amountIn: _amountIn,
+      amountOut: _amountReceived
+    });
   }
 
   function supportsInterface(bytes4 _interfaceId)
