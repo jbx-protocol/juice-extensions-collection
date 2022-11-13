@@ -2,13 +2,14 @@
 pragma solidity 0.8.6;
 
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import '@jbx-protocol-v1/contracts/interfaces/IModAllocator.sol';
 
 /**
  @title
  Juicebox split allocator for allocating v1 treasury funds to v3 treasury
 */
-contract V1Allocator is ERC165, IModAllocator {
+contract V1Allocator is ERC165, IModAllocator, ReentrancyGuard {
  //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
@@ -22,7 +23,7 @@ contract V1Allocator is ERC165, IModAllocator {
     @param _forProjectId project id where the funds will be transferred to.
     @param _beneficiary beneficiary to transfer the funds to
   */
-  function allocate(uint256 _projectId, uint256 _forProjectId, address _beneficiary) external payable override {
+  function allocate(uint256 _projectId, uint256 _forProjectId, address _beneficiary) external payable nonReentrant override {
     // avoid compiler warnings
     _projectId; 
     _forProjectId;

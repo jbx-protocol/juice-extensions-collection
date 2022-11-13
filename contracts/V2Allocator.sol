@@ -2,6 +2,7 @@
 pragma solidity 0.8.6;
 
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import '@jbx-protocol-v2/contracts/structs/JBSplitAllocationData.sol';
 import '@jbx-protocol-v2/contracts/interfaces/IJBTokenStore.sol';
 import '@jbx-protocol-v2/contracts/libraries/JBTokens.sol';
@@ -11,7 +12,7 @@ import '@openzeppelin/contracts/interfaces/IERC20.sol';
  @title
  Juicebox split allocator for allocating v2 treasury funds to v3 treasury
 */
-contract V2Allocator is ERC165, IJBSplitAllocator {
+contract V2Allocator is ERC165, IJBSplitAllocator, ReentrancyGuard {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
@@ -37,7 +38,7 @@ contract V2Allocator is ERC165, IJBSplitAllocator {
 
     @param _data allocation config which specifies the beneficiary, split info
   */
-  function allocate(JBSplitAllocationData calldata _data) external payable override {    
+  function allocate(JBSplitAllocationData calldata _data) external payable nonReentrant override {    
     if (_data.token == JBTokens.ETH) {
       // send eth to the beneficiary
       (bool success, ) = _data.split.beneficiary.call{ value: msg.value, gas: 20000 }("");
