@@ -17,7 +17,9 @@ jobs:
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: nightly
-      - name: install libraries
+      - name: install git modules
         run: git submodule update --init --force --recursive
+      - name: install npm packages
+        run: npm i
       - name: Run tests
         run: forge test --force --optimize -vvv
