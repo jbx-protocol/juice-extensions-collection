@@ -5,6 +5,7 @@ out = 'out'
 libs = ['lib']
 remappings = [
     '@jbx-protocol-v2=lib/juice-contracts-v2',
+    '@jbx-protocol-v1=lib/juice-contracts-v1',
     '@openzeppelin=lib/openzeppelin-contracts',
     'forge-std/=lib/forge-std/src/',
 ]
