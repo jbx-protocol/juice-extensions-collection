@@ -7,7 +7,6 @@ import '@jbx-protocol-v2/contracts/structs/JBSplitAllocationData.sol';
 import '@jbx-protocol-v3/contracts/interfaces/IJBDirectory.sol';
 import '@jbx-protocol-v3/contracts/interfaces/IJBPaymentTerminal.sol';
 import '@jbx-protocol-v3/contracts/libraries/JBTokens.sol';
-import '@openzeppelin/contracts/interfaces/IERC20.sol';
 
 /**
  @title
