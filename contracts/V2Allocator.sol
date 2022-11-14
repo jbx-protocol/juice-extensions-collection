@@ -4,8 +4,9 @@ pragma solidity 0.8.6;
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import '@jbx-protocol-v2/contracts/structs/JBSplitAllocationData.sol';
-import '@jbx-protocol-v2/contracts/interfaces/IJBTokenStore.sol';
-import '@jbx-protocol-v2/contracts/libraries/JBTokens.sol';
+import '@jbx-protocol-v3/contracts/interfaces/IJBDirectory.sol';
+import '@jbx-protocol-v3/contracts/interfaces/IJBPaymentTerminal.sol';
+import '@jbx-protocol-v3/contracts/libraries/JBTokens.sol';
 import '@openzeppelin/contracts/interfaces/IERC20.sol';
 
 /**
@@ -13,23 +14,23 @@ import '@openzeppelin/contracts/interfaces/IERC20.sol';
  Juicebox split allocator for allocating v2 treasury funds to v3 treasury
 */
 contract V2Allocator is ERC165, IJBSplitAllocator, ReentrancyGuard {
-  //*********************************************************************//
+ //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
-  error TRANSACTIONAL_TOKEN_TRANSFER_FAILURE();
+  error TERMINAL_NOT_FOUND();
+
 
   /**
     @notice
-    The token store address.
+    The jb directory address.
   */
-  IJBTokenStore public immutable tokenStore;
-
+  IJBDirectory public immutable directory;
 
   /**
-    @param _tokenStore token store address. 
+    @param _directory directory address. 
   */
-  constructor(IJBTokenStore _tokenStore) {
-    tokenStore = _tokenStore;
+  constructor(IJBDirectory _directory) {
+    directory = _directory;
   }
 
   /**
@@ -39,25 +40,19 @@ contract V2Allocator is ERC165, IJBSplitAllocator, ReentrancyGuard {
     @param _data allocation config which specifies the beneficiary, split info
   */
   function allocate(JBSplitAllocationData calldata _data) external payable nonReentrant override {    
-    if (_data.token == JBTokens.ETH) {
-      // send eth to the beneficiary
-      (bool success, ) = _data.split.beneficiary.call{ value: msg.value, gas: 20000 }("");
-      // check if the transfer was successful
-      if (!success) {
-        revert TRANSACTIONAL_TOKEN_TRANSFER_FAILURE();
-      }
-    } else if (address(tokenStore.tokenOf(_data.projectId)) != _data.token) {
-        // if the allocation comes from a erc20 termianl just do a simple transfer
-        IERC20(_data.token).transferFrom(msg.sender, _data.split.beneficiary, _data.amount);
-    } else {
-        if (_data.split.preferClaimed) {
-        // if the allocation comes from a controller and preferClaimed is true then tokens are already minted to the allocator so just transfer
-           tokenStore.tokenOf(_data.projectId).transfer(_data.projectId, _data.split.beneficiary, _data.amount);     
-        } else {
-          // if the allocation comes from a controller and preferClaimed is false then transfer the unclaimed balance to the beneficiary
-           tokenStore.transferFrom(address(this), _data.projectId,  _data.split.beneficiary, _data.amount);
-        }
-    }
+    // eth terminal
+    IJBPaymentTerminal _terminal = directory.primaryTerminalOf( _data.projectId, JBTokens.ETH);
+
+    if (address(_terminal) == address(0)) revert TERMINAL_NOT_FOUND();
+    
+    // add to balance of v3 terminal for the project
+    _terminal.addToBalanceOf{value: msg.value}(
+        _data.projectId,
+        msg.value,
+        JBTokens.ETH,
+        "v2 -> v3 allocation",
+        bytes("")
+    );
   }
 
   function supportsInterface(bytes4 _interfaceId)
@@ -70,3 +65,4 @@ contract V2Allocator is ERC165, IJBSplitAllocator, ReentrancyGuard {
       _interfaceId == type(IJBSplitAllocator).interfaceId || super.supportsInterface(_interfaceId);
   }
 }
+
