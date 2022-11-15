@@ -105,7 +105,7 @@ contract SwapAllocator_Test is TestBaseWorkflow {
     _dexes.push(IPoolWrapper(_poolWrapper1));
     _dexes.push(IPoolWrapper(_poolWrapper2));
 
-    _allocator = new SwapAllocator(_tokenOut, _dexes);
+    _allocator = new SwapAllocator( { _tokenOut: _tokenOut, _tokenIn: jbLibraries().ETHToken(), _dexes: _dexes });
 
     _splits[0] = JBSplit({
       preferClaimed: true,

@@ -13,48 +13,75 @@ import './interfaces/ICurveRegistry.sol';
 import './interfaces/ICurvePool.sol';
 
 /**
- @title
- Juicebox split allocator - swap to another asset
+  @title  Juicebox split allocator - swap to another asset
 
- @notice
+  @notice This allocator should be deployed for a given token out (at construction time), while the token received
+          from the split distribution is free.
+          
+          Dex to use should be added/removed with addDex/removeDex.
 
- @dev does NOT support fee on transfer token. Revert should be handled in this implementation, wrappers are optimistic
+          If no market is found or the swap revert (low liquidity for instance), the original token in is sent to the
+          split beneficiary.
+
+  @dev    Does NOT support fee on transfer token. Revert should be handled in this implementation, wrappers are optimistic
+          and the main design is to *not* block splits distribution.
+          For clarity, we suggest changing the contract's name to reflect the tokenOut (ie SwapAllocatorDai)
 */
 contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
   event SwapAllocated(address indexed beneficiary, address tokenIn, address tokenOut, uint256 amountIn, uint256 amountOut);
-  event NewDex(IPoolWrapper);
+  event NewDex(IPoolWrapper[]);
   event RemoveDex(IPoolWrapper);
 
-  // All the dexes for this allocator token tuple
-  IPoolWrapper[] public dexes;
+  /**
+    @notice         All the dexes for this allocator token tuple
+    @custom:param   tokenIn The token to swap
+    @return         wrapper The list of pool wrappers tokenIn->tokenOut
+  */
+  mapping(address=>IPoolWrapper[]) public dexesOf;
 
   // The token which should be distributed to the beneficiary
-  address tokenOut;
+  address immutable tokenOut;
 
   constructor(
     address _tokenOut,
+    address _tokenIn,
     IPoolWrapper[] memory _dexes
   ) {
-    dexes = _dexes;
+    // Add all the dexes for tokenIn->tokenOut
+    uint256 _numberOfDexes = _dexes.length;
+    for(uint256 _i; _i != _numberOfDexes;) {
+      dexesOf[_tokenIn].push(_dexes[_i]);
+      unchecked { ++_i; }
+    }
+
     tokenOut = _tokenOut;
   }
 
-  function addDex(IPoolWrapper _newDex) external onlyOwner {
-    dexes.push(_newDex);
-    emit NewDex(_newDex);
+  function addDex(address _tokenIn, IPoolWrapper[] calldata _newDexes) external onlyOwner {
+
+    // Add all the dexes
+    uint256 _numberOfDexes = _newDexes.length;
+    for(uint256 _i; _i != _numberOfDexes;) {
+      dexesOf[_tokenIn].push(_newDexes[_i]);
+      unchecked { ++_i; }
+    }
+
+    emit NewDex(_newDexes);
   }
 
-  function removeDex(IPoolWrapper _dexToRemove) external onlyOwner {
-    uint256 _numberOfDexes = dexes.length;
+  function removeDex(address _tokenIn, IPoolWrapper _dexToRemove) external onlyOwner {
+    uint256 _numberOfDexes = dexesOf[_tokenIn].length;
+
     IPoolWrapper _currentWrapper;
 
+    // Find the wrapper to remove
     for(uint i; i < _numberOfDexes;) {
-      _currentWrapper = dexes[i];
+      _currentWrapper = dexesOf[_tokenIn][i];
 
       // Swap and pop
       if(_currentWrapper == _dexToRemove) {
-        dexes[i] = dexes[_numberOfDexes - 1];
-        dexes.pop();
+        dexesOf[_tokenIn][i] = dexesOf[_tokenIn][_numberOfDexes - 1];
+        dexesOf[_tokenIn].pop();
         break;
       }
 
@@ -81,9 +108,9 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
 
     // Keep a reference to the stored wrapper
     IPoolWrapper _currentWrapper;
-    uint256 _activeDexes = dexes.length;
+    uint256 _activeDexes = dexesOf[_tokenIn].length;
     for (uint256 i; i < _activeDexes; ) {
-      _currentWrapper = dexes[i];
+      _currentWrapper = dexesOf[_tokenIn][i];
 
       // Get a quote (expressed as a net amount of token received for an amount of token sent)
       try _currentWrapper.getQuote(_amountIn, _tokenIn, _tokenOut) returns(uint256 _quote, address _pool) {
