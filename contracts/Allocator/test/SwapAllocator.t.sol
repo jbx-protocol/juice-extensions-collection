@@ -195,9 +195,69 @@ contract SwapAllocator_Test is TestBaseWorkflow {
     if (_bestAmountOut == 0) assertEq(_balanceBefore + _beneficiary.balance, 1 ether);
   }
 
-  function test_allocate_sendTokenInIfNoQuote() public {}
+  function test_allocate_sendTokenInIfNoQuote(uint128 amountIn) public {
+    vm.assume(amountIn <= 1 ether && amountIn != 0);
 
-  function test_allocate_sendTokenInIfNoSwap() public {}
+    // Mock the quote
+    vm.mockCall(_poolWrapper1, abi.encodeCall(IPoolWrapper.getQuote, (amountIn, jbLibraries().ETHToken(), _tokenOut)), abi.encode(0, address(0)));
+    vm.mockCall(_poolWrapper2, abi.encodeCall(IPoolWrapper.getQuote, (amountIn, jbLibraries().ETHToken(), _tokenOut)), abi.encode(0, address(0)));
 
+    // --- Test ---
 
+    // Check: call for a quote on every wrapper?
+    vm.expectCall(_poolWrapper1, abi.encodeCall(IPoolWrapper.getQuote, (amountIn, jbLibraries().ETHToken(), _tokenOut)));
+    vm.expectCall(_poolWrapper2, abi.encodeCall(IPoolWrapper.getQuote, (amountIn, jbLibraries().ETHToken(), _tokenOut)));
+
+    //else check eth balance (token out == token in)
+    uint256 _balanceBefore = _beneficiary.balance;
+
+    _terminal.distributePayoutsOf(_projectId, amountIn, jbLibraries().ETH(), jbLibraries().ETHToken(), 0, 'payout');
+
+    // No swap, check eth balance
+    assertEq(_balanceBefore + _beneficiary.balance, amountIn);
+  }
+
+  function test_allocate_sendTokenInIfNoSwap(uint128 amountIn, uint128 amountOut1, uint128 amountOut2) public {
+    vm.assume(amountIn <= 1 ether && amountIn != 0);
+
+    vm.assume(uint256(amountOut1) + uint256(amountOut2) <= type(uint128).max);
+    vm.assume(amountOut1 != amountOut2);
+
+    // The best amount out possible (either amount 1 or 2)
+    uint128 _bestAmountOut = amountOut1 > amountOut2 ? amountOut1 : amountOut2;
+    address _bestWrapper = amountOut1 > amountOut2 ? _poolWrapper1 : _poolWrapper2;
+
+    // Mock the quote
+    vm.mockCall(_poolWrapper1, abi.encodeCall(IPoolWrapper.getQuote, (amountIn, jbLibraries().ETHToken(), _tokenOut)), abi.encode(amountOut1, _pool1));
+    vm.mockCall(_poolWrapper2, abi.encodeCall(IPoolWrapper.getQuote, (amountIn, jbLibraries().ETHToken(), _tokenOut)), abi.encode(amountOut2, _pool2));
+
+    // Mock the swap, returning 0
+    vm.mockCall(
+      _bestWrapper,
+      abi.encodeCall(
+        IPoolWrapper.swap,
+        (amountIn, jbLibraries().ETHToken(), _tokenOut, _bestAmountOut, amountOut1 > amountOut2 ? _pool1 : _pool2)
+      ),
+      abi.encode(0)
+    );
+
+    // --- Test ---
+
+    // Check: call for a quote on every wrapper?
+    vm.expectCall(_poolWrapper1, abi.encodeCall(IPoolWrapper.getQuote, (amountIn, jbLibraries().ETHToken(), _tokenOut)));
+    vm.expectCall(_poolWrapper2, abi.encodeCall(IPoolWrapper.getQuote, (amountIn, jbLibraries().ETHToken(), _tokenOut)));
+
+    // Check: call to swap on the correct pool?  
+    vm.expectCall(_bestWrapper, abi.encodeCall(IPoolWrapper.swap, (amountIn, jbLibraries().ETHToken(), _tokenOut, _bestAmountOut, amountOut1 > amountOut2 ? _pool1 : _pool2)));
+
+    // But 0 token received, check eth balance (token out == token in)
+    uint256 _balanceBefore = _beneficiary.balance;
+
+    _terminal.distributePayoutsOf(_projectId, amountIn, jbLibraries().ETH(), jbLibraries().ETHToken(), 0, 'payout');
+
+    // Check: no swap, check eth balance
+    assertEq(_balanceBefore + _beneficiary.balance, amountIn);
+  }
+
+  // TODO: Test on revert
 }

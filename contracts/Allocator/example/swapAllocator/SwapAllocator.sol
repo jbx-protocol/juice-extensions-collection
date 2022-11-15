@@ -18,7 +18,7 @@ import './interfaces/ICurvePool.sol';
 
  @notice
 
- @dev does NOT support fee on transfer token
+ @dev does NOT support fee on transfer token. Revert should be handled in this implementation, wrappers are optimistic
 */
 contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
   event SwapAllocated(address indexed beneficiary, address tokenIn, address tokenOut, uint256 amountIn, uint256 amountOut);
@@ -85,15 +85,16 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
     for (uint256 i; i < _activeDexes; ) {
       _currentWrapper = dexes[i];
 
-      // Get a quote (expressed as an amount of token received for an amount of token sent)
-      (uint256 _quote, address _pool) = _currentWrapper.getQuote(_amountIn, _tokenIn, _tokenOut);
-
-      // If the amount received from this dex is higher, save this wrapper
-      if (_quote > _bestQuote) {
-        _bestPool = _pool;
-        _bestQuote = _quote;
-        _bestWrapper = _currentWrapper;
+      // Get a quote (expressed as a net amount of token received for an amount of token sent)
+      try _currentWrapper.getQuote(_amountIn, _tokenIn, _tokenOut) returns(uint256 _quote, address _pool) {
+        // If the amount received from this dex is higher, save this wrapper
+        if (_quote > _bestQuote) {
+          _bestPool = _pool;
+          _bestQuote = _quote;
+          _bestWrapper = _currentWrapper;
+        }
       }
+      catch {}
 
       unchecked {
         ++i;
@@ -102,21 +103,26 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
 
     uint256 _amountReceived;
 
-    // If a swap should be possible, do it
+    // If a swap should be possible, try it
     if(_bestQuote != 0) {
       // If ERC20, approve the wrapper
       if(_tokenIn != JBTokens.ETH) IERC20(_tokenIn).approve(address(_bestWrapper), _amountIn);
 
-      // Call swap with the appropriate value
-      _amountReceived = _bestWrapper.swap{value: _tokenIn == JBTokens.ETH ? _amountIn : 0}(_amountIn, _tokenIn, _tokenOut, _bestQuote, _bestPool);
+      // Call swap with the appropriate value, avoid reverting by returning 0 if fails
+      try _bestWrapper.swap{value: _tokenIn == JBTokens.ETH ? _amountIn : 0}(_amountIn, _tokenIn, _tokenOut, _bestQuote, _bestPool) returns(uint256 _received) {
+        _amountReceived = _received;
+      }
+      catch {
+        // implicit: _amountReceived = 0;
+      }
     }
 
     // If the swap was succesful, transfer token
-    if(_amountReceived != 0) {
+    if(_amountReceived != 0)
       // Send the eth or token received to the beneficiary
       if(_tokenOut == JBTokens.ETH) payable(_beneficiary).transfer(address(this).balance);
       else IERC20(_tokenOut).transferFrom(address(_bestWrapper), _beneficiary, _amountReceived); // Transfer the token to the beneficiary
-    }
+
     // If no swap was performed (no best quote or received 0), send the original token to the beneficiary
     else 
       if(_tokenIn == JBTokens.ETH) payable(_beneficiary).transfer(msg.value); 

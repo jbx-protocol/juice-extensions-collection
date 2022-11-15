@@ -26,19 +26,13 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
   ) external view returns (uint256 _amountOut, address _pool) {
     _pool = _pairFor(_tokenIn, _tokenOut);
 
-    try IUniswapV2Pair(_pool).getReserves() returns (uint112 reserve0, uint112 reserve1, uint32) {
-      // reserve0 is the tokenIn
-      (reserve0, reserve1) = _tokenIn < _tokenOut ? (reserve0, reserve1) : (reserve1, reserve0);
+    (uint112 reserve0, uint112 reserve1,) = IUniswapV2Pair(_pool).getReserves();
+    
+    // reserve0 is the tokenIn
+    (reserve0, reserve1) = _tokenIn < _tokenOut ? (reserve0, reserve1) : (reserve1, reserve0);
 
-      _amountOut = _getAmountOut(_amountIn, reserve0, reserve1);
-    }
-    catch { // No pool for this token
-      _amountOut = 0;
-      _pool = address(0);
-    }
+    _amountOut = _getAmountOut(_amountIn, reserve0, reserve1);
   }
-
-// TODO: _amountReceived == 0 -> tranfer tokenIn (then non-blocking logic in swap wrapper, add try-catch)
 
   function swap(
     uint256 _amountIn,
