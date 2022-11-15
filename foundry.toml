@@ -4,8 +4,10 @@ test = 'test'
 out = 'out'
 libs = ['lib']
 remappings = [
+    '@jbx-protocol-v3=lib/juice-contracts-v3',
     '@jbx-protocol-v2=lib/juice-contracts-v2',
-    '@openzeppelin=lib/openzeppelin-contracts',
+    '@jbx-protocol-v1=lib/juice-contracts-v1',
+    '@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/',
     'forge-std/=lib/forge-std/src/',
 ]
 libraries = []
