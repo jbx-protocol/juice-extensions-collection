@@ -34,14 +34,23 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
 
   /**
     @notice         All the dexes for this allocator token tuple
+
     @custom:param   tokenIn The token to swap
+
     @return         wrapper The list of pool wrappers tokenIn->tokenOut
   */
   mapping(address=>IPoolWrapper[]) public dexesOf;
 
-  // The token which should be distributed to the beneficiary
+  /**
+    @notice The token which should be distributed
+  */
   address immutable tokenOut;
 
+  /**
+    @param _tokenOut The token to receive
+    @param _tokenIn  A first token in (others can be added via addDex)
+    @param _dexes    A first array of dexes supporting tokenIn->tokenOut swap
+  */
   constructor(
     address _tokenOut,
     address _tokenIn,
@@ -57,6 +66,12 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
     tokenOut = _tokenOut;
   }
 
+  /**
+    @notice  Add one or multiple dex supporting a given tokenIn-tokenOut market
+
+    @param   _tokenIn  The token to swap
+    @param   _newDexes The array of new pool wrappers to add
+  */
   function addDex(address _tokenIn, IPoolWrapper[] calldata _newDexes) external onlyOwner {
 
     // Add all the dexes
@@ -69,6 +84,12 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
     emit NewDex(_newDexes);
   }
 
+  /**
+    @notice  Remove a wrapper for a given pair
+
+    @param   _tokenIn     The token to swap
+    @param   _dexToRemove The address of the wrapper to remove
+  */
   function removeDex(address _tokenIn, IPoolWrapper _dexToRemove) external onlyOwner {
     uint256 _numberOfDexes = dexesOf[_tokenIn].length;
 
@@ -108,7 +129,9 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
 
     // Keep a reference to the stored wrapper
     IPoolWrapper _currentWrapper;
+
     uint256 _activeDexes = dexesOf[_tokenIn].length;
+    
     for (uint256 i; i < _activeDexes; ) {
       _currentWrapper = dexesOf[_tokenIn][i];
 
@@ -121,7 +144,9 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
           _bestWrapper = _currentWrapper;
         }
       }
-      catch {}
+      catch {
+        // implicit: _quote = 0 and _pool=address(0)
+      }
 
       unchecked {
         ++i;
@@ -135,7 +160,7 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
       // If ERC20, approve the wrapper
       if(_tokenIn != JBTokens.ETH) IERC20(_tokenIn).approve(address(_bestWrapper), _amountIn);
 
-      // Call swap with the appropriate value, avoid reverting by returning 0 if fails
+      // Call swap with the appropriate value, avoid reverting by returning 0 if the swap reverts
       try _bestWrapper.swap{value: _tokenIn == JBTokens.ETH ? _amountIn : 0}(_amountIn, _tokenIn, _tokenOut, _bestQuote, _bestPool) returns(uint256 _received) {
         _amountReceived = _received;
       }
@@ -144,13 +169,12 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
       }
     }
 
-    // If the swap was succesful, transfer token
+    // If the swap was succesful, transfer the tokenOut received
     if(_amountReceived != 0)
-      // Send the eth or token received to the beneficiary
       if(_tokenOut == JBTokens.ETH) payable(_beneficiary).transfer(address(this).balance);
-      else IERC20(_tokenOut).transferFrom(address(_bestWrapper), _beneficiary, _amountReceived); // Transfer the token to the beneficiary
+      else IERC20(_tokenOut).transferFrom(address(_bestWrapper), _beneficiary, _amountReceived);
 
-    // If no swap was performed (no best quote or received 0), send the original token to the beneficiary
+    // If no swap was performed (no best quote or 0 received), send the tokenIn to the beneficiary
     else 
       if(_tokenIn == JBTokens.ETH) payable(_beneficiary).transfer(msg.value); 
       else IERC20(_tokenIn).transfer(_beneficiary, _amountIn);

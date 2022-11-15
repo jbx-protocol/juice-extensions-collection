@@ -95,8 +95,8 @@ contract SwapAllocator_Test is TestBaseWorkflow {
         token: jbLibraries().ETHToken(),
         distributionLimit: 10 ether,
         overflowAllowance: 10 ether,
-        distributionLimitCurrency: 1, // Currency = ETH
-        overflowAllowanceCurrency: 1
+        distributionLimitCurrency: jbLibraries().ETH(),
+        overflowAllowanceCurrency: jbLibraries().ETH()
       })
     );
 
