@@ -4,8 +4,12 @@ pragma solidity ^0.8.16;
 import '../interfaces/IPoolWrapper.sol';
 
 import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
+import '@uniswap/v2-periphery/contracts/interfaces/IWETH.sol';
 
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBTokens.sol';
+
 
 /**
  @title
@@ -17,10 +21,12 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 */
 contract Mainnet_UniswapV2 is IPoolWrapper {
 
-  address immutable factory; 
+  address immutable factory;
+  address immutable weth;
 
-  constructor(address _factory) {
+  constructor(address _factory, address _weth) {
     factory = _factory; // uniV2 mainnet 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f
+    weth = _weth; // weth mainnet
   }
 
   function getQuote(
@@ -28,6 +34,9 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     address _tokenIn,
     address _tokenOut
   ) external view returns (uint256 _amountOut, address _pool) {
+    if(_tokenIn == JBTokens.ETH) _tokenIn = weth;
+    if(_tokenOut == JBTokens.ETH) _tokenOut = weth;
+
     _pool = _pairFor(_tokenIn, _tokenOut);
 
     (uint112 reserve0, uint112 reserve1,) = IUniswapV2Pair(_pool).getReserves();
@@ -45,8 +54,13 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     uint256 _amountOut,
     address _pool
   ) external payable returns (uint256 _amountReceived){
+    if(_tokenIn == JBTokens.ETH) {
+      IWETH(weth).deposit{value: _amountIn}();
+      _tokenIn = weth;
+    }
+    
     // Optimistically transfer the tokenIn to the uniswap pool
-    IERC20(_tokenOut).transferFrom(msg.sender, _pool, _amountIn);
+    IERC20(_tokenIn).transferFrom(msg.sender, _pool, _amountIn);
 
     // Assign the amount out,
     (uint256 amount0Out, uint256 amount1Out) = _tokenIn < _tokenOut
@@ -57,10 +71,15 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     IUniswapV2Pair(_pool).swap(amount0Out, amount1Out, msg.sender, new bytes(0));
 
     // Check what we received
-    _amountReceived = IERC20(_tokenOut).balanceOf(address(this));
+    _amountReceived = IERC20(_tokenOut == JBTokens.ETH ? weth : _tokenOut).balanceOf(address(this));
 
+    // Unwrap weth is eth is requested
+    if(_tokenOut == JBTokens.ETH) {
+      IWETH(weth).withdraw(_amountReceived);
+      payable(msg.sender).transfer(_amountReceived);
+    }
     // Approve the token received
-    IERC20(_tokenOut).approve(msg.sender, _amountReceived);
+    else IERC20(_tokenOut).approve(msg.sender, _amountReceived);
   }
 
   /**

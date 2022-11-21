@@ -10,20 +10,24 @@ contract SwapAllocator_UniV2_Test is Test {
   Mainnet_UniswapV2 _wrapper;
   address _tokenIn;
   address _tokenOut;
+  address _weth;
   address payable _beneficiary;
   
   function setUp() public {
     _tokenIn = makeAddr('_tokenOut');
     _tokenOut = makeAddr('_tokenOut');
+    _tokenOut = makeAddr('_weth');
     _beneficiary =  payable(makeAddr('_beneficiary'));
 
     vm.etch(_tokenIn, new bytes(69));
     vm.etch(_tokenOut, new bytes(69));
+    vm.etch(_weth, new bytes(69));
 
-    _wrapper = new Mainnet_UniswapV2(_uniV2Factory);
+    _wrapper = new Mainnet_UniswapV2(_uniV2Factory, _weth);
   }
 
   function test_getQuote_getAQuote(address _tokenIn, address _tokenOut) public {
+
   }
 
   function test_getQuote_returnZeroIfNoQuote() public {
