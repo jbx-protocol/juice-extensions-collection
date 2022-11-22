@@ -121,8 +121,13 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
     address _tokenOut = tokenOut;
     address _beneficiary = _data.split.beneficiary;
 
+    // No swap to perform -> transparently pass through the allocator
+    if(_tokenIn == _tokenOut)
+      if(_tokenIn == JBTokens.ETH) payable(_beneficiary).transfer(msg.value); 
+      else IERC20(_tokenIn).transfer(_beneficiary, _amountIn);
+
     // Keep record of the best pool wrapper. The pool address is passed to avoid having
-    // to find it again in the wrapper
+    // to find it again in the wrapper when swapping later on
     address _bestPool;
     uint256 _bestQuote;
     IPoolWrapper _bestWrapper;
@@ -160,7 +165,7 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
       // If ERC20, approve the wrapper
       if(_tokenIn != JBTokens.ETH) IERC20(_tokenIn).approve(address(_bestWrapper), _amountIn);
 
-      // Call swap with the appropriate value, avoid reverting by returning 0 if the swap reverts
+      // Call swap with the appropriate msg.value, avoid reverting by returning 0 if the swap reverts
       try _bestWrapper.swap{value: _tokenIn == JBTokens.ETH ? _amountIn : 0}(_amountIn, _tokenIn, _tokenOut, _bestQuote, _bestPool) returns(uint256 _received) {
         _amountReceived = _received;
       }
