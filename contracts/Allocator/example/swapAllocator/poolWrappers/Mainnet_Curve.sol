@@ -84,10 +84,19 @@ contract Mainnet_curve is IPoolWrapper {
     }
 
     // Swap - no slippage allowed, as the quote and swap are atomic. use_eth will wrap/unwrap eth as needed
-    _amountReceived = ICurvePool(_pool).exchange{value: _tokenIn == JBTokens.ETH ? _amountIn : 0}( {i: i, j: j, dx: _amountIn, min_dy: _amountOut, use_eth: true });
+    _amountReceived = ICurvePool(_pool)
+      .exchange{value: _tokenIn == JBTokens.ETH ? _amountIn : 0}(
+        {
+          i: i, 
+          j: j, 
+          dx: _amountIn, 
+          min_dy: _amountOut, 
+          use_eth: (_tokenIn == JBTokens.ETH || _tokenOut == JBTokens.ETH)
+        }
+      );
 
     // Send eth if eth is requested
-    if(_tokenOut == weth) {
+    if(_tokenOut == JBTokens.ETH) {
       payable(msg.sender).transfer(_amountReceived);
     }
     // Approve the token received

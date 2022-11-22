@@ -34,6 +34,7 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     address _tokenIn,
     address _tokenOut
   ) external view returns (uint256 _amountOut, address _pool) {
+    if(_amountIn == 0) return(0, address(0));
     if(_tokenIn == JBTokens.ETH) _tokenIn = weth;
     if(_tokenOut == JBTokens.ETH) _tokenOut = weth;
 
@@ -104,7 +105,7 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
       )
     );
 
-    pair = address(bytes20(pubKey));
+    assembly { pair := pubKey }
   }
 
   /**
