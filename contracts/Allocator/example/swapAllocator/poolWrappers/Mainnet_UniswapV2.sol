@@ -73,7 +73,7 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     // Check what we received
     _amountReceived = IERC20(_tokenOut == JBTokens.ETH ? weth : _tokenOut).balanceOf(address(this));
 
-    // Unwrap weth is eth is requested
+    // Unwrap weth if eth is requested
     if(_tokenOut == JBTokens.ETH) {
       IWETH(weth).withdraw(_amountReceived);
       payable(msg.sender).transfer(_amountReceived);
