@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.6;
+pragma solidity ^0.8.16;
 
-import '@jbx-protocol-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
-import '@jbx-protocol-v2/contracts/libraries/JBCurrencies.sol';
-import '@jbx-protocol-v2/contracts/libraries/JBTokens.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleDataSource.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBCurrencies.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBTokens.sol';
 
 import '@openzeppelin/contracts/interfaces/IERC721.sol';
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
@@ -27,10 +27,12 @@ contract NFTFundingCycleDataSource is IJBFundingCycleDataSource, ERC165 {
     returns (
       uint256 weight,
       string memory memo,
-      IJBPayDelegate delegate
+      JBPayDelegateAllocation[] memory delegateAllocations
     )
   {
-    return (_param.weight, _param.memo, NFTDelegate);
+    delegateAllocations = new JBPayDelegateAllocation[](1);
+    delegateAllocations[0] = JBPayDelegateAllocation({amount: 0, delegate: NFTDelegate});
+    return (_param.weight, _param.memo, delegateAllocations);
   }
 
   function redeemParams(JBRedeemParamsData calldata _param)
@@ -40,12 +42,12 @@ contract NFTFundingCycleDataSource is IJBFundingCycleDataSource, ERC165 {
     returns (
       uint256 reclaimAmount,
       string memory memo,
-      IJBRedemptionDelegate delegate
+      JBRedemptionDelegateAllocation[] memory delegateAllocations
     )
   {
     if (IERC721(address(NFTDelegate)).balanceOf(_param.holder) > 0)
-      return (_param.reclaimAmount.value, 'bye holder', IJBRedemptionDelegate(address(0)));
-    else return (0, 'no way', IJBRedemptionDelegate(address(0)));
+      return (_param.reclaimAmount.value, 'bye holder', new JBRedemptionDelegateAllocation[](0));
+    else return (0, 'no way', new JBRedemptionDelegateAllocation[](0));
   }
 
   function supportsInterface(bytes4 _interfaceId)

@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import 'ds-test/test.sol';
-import 'forge-std/Vm.sol';
+import 'forge-std/Test.sol';
 
 import '@jbx-protocol/juice-contracts-v3/contracts/JBController.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/JBDirectory.sol';
@@ -41,7 +40,7 @@ import '@paulrberg/contracts/math/PRBMath.sol';
 // Base contract for Juicebox system tests.
 //
 // Provides common functionality, such as deploying contracts on test setup.
-contract TestBaseWorkflow is DSTest {
+contract TestBaseWorkflow is Test {
   //*********************************************************************//
   // --------------------- private stored properties ------------------- //
   //*********************************************************************//
@@ -227,25 +226,6 @@ contract TestBaseWorkflow is DSTest {
       _multisig
     );
     evm.label(address(_jbETHPaymentTerminal), 'JBETHPaymentTerminal');
-
-    evm.prank(_multisig);
-    _jbToken = new JBToken('MyToken', 'MT', 69);
-
-    // JBERC20PaymentTerminal
-    _jbERC20PaymentTerminal = new JBERC20PaymentTerminal(
-      _jbToken,
-      _accessJBLib.ETH(), // currency
-      _accessJBLib.ETH(), // base weight currency
-      1, // JBSplitsGroup
-      _jbOperatorStore,
-      _jbProjects,
-      _jbDirectory,
-      _jbSplitsStore,
-      _jbPrices,
-      _jbPaymentTerminalStore,
-      _multisig
-    );
-    evm.label(address(_jbERC20PaymentTerminal), 'JBERC20PaymentTerminal');
   }
 
   //https://ethereum.stackexchange.com/questions/24248/how-to-calculate-an-ethereum-contracts-address-during-its-creation-using-the-so

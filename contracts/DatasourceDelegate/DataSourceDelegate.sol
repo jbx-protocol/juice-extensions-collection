@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.6;
+pragma solidity ^0.8.16;
 
-import '@jbx-protocol-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
-import '@jbx-protocol-v2/contracts/interfaces/IJBPayDelegate.sol';
-import '@jbx-protocol-v2/contracts/interfaces/IJBRedemptionDelegate.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleDataSource.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBRedemptionDelegate.sol';
 
 /**
  @title
@@ -21,10 +21,12 @@ contract DataSourceDelegate is IJBFundingCycleDataSource, IJBPayDelegate, IJBRed
     returns (
       uint256 weight,
       string memory memo,
-      IJBPayDelegate delegate
+      JBPayDelegateAllocation[] memory delegate
     )
   {
-    return (0, _data.memo, IJBPayDelegate(address(this)));
+    delegate = new JBPayDelegateAllocation[](1);
+    delegate[0] = JBPayDelegateAllocation({delegate: IJBPayDelegate(this), amount: 0});
+    return (0, _data.memo, delegate);
   }
 
   //@inheritdocs IJBFundingCycleDataSource
@@ -35,17 +37,23 @@ contract DataSourceDelegate is IJBFundingCycleDataSource, IJBPayDelegate, IJBRed
     returns (
       uint256 reclaimAmount,
       string memory memo,
-      IJBRedemptionDelegate delegate
+      JBRedemptionDelegateAllocation[] memory delegate
     )
   {
-    return (0, '', IJBRedemptionDelegate(address(this)));
+    delegate = new JBRedemptionDelegateAllocation[](1);
+    delegate[0] = JBRedemptionDelegateAllocation({
+      delegate: IJBRedemptionDelegate(this),
+      amount: 0
+    });
+
+    return (0, '', delegate);
   }
 
   //@inheritdocs IJBPayDelegate
-  function didPay(JBDidPayData calldata _data) external override {}
+  function didPay(JBDidPayData calldata _data) external payable override {}
 
   //@inheritdocs IJBRedemptionDelegate
-  function didRedeem(JBDidRedeemData calldata _data) external override {}
+  function didRedeem(JBDidRedeemData calldata _data) external payable override {}
 
   function supportsInterface(bytes4 _interfaceId) external pure override returns (bool) {
     return
