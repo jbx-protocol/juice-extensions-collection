@@ -4,6 +4,7 @@ pragma solidity ^0.8.16;
 import { Test } from 'forge-std/Test.sol';
 import { Mainnet_UniswapV2 } from '../example/swapAllocator/poolWrappers/Mainnet_UniswapV2.sol';
 import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
+import '@uniswap/v2-periphery/contracts/interfaces/IWETH.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBTokens.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
@@ -142,10 +143,79 @@ contract SwapAllocator_UniV2_Test is Test {
     _wrapper.swap(_amountIn, tokenIn, tokenOut, _amountOut, InOutPool);
   }
 
-  function test_swap_transferTokenAndSwap_ethIn() public {
+
+  function test_swap_transferTokenAndSwap_ethIn(uint256 _amountIn, uint256 _amountOut) public {
+    uint256 _amount0;
+    uint256 _amount1;
+
+    bool _wethIsZero = weth < tokenOut;
+
+    // IUniswapV2Pair.swap only expects the amount of token out (token1 or 2) as calldata
+    if(_wethIsZero) {
+      (_amount0, _amount1) = (0, _amountOut);
+    } else 
+      (_amount0, _amount1) = (_amountOut, 0);
+
+    // Mock and expect the weth wrapping
+    vm.mockCall(weth, abi.encodeCall(IWETH.deposit, ()), abi.encode());
+    vm.expectCall(weth, _amountIn, abi.encodeCall(IWETH.deposit, ()));
+
+    // Mock & expect the transfer from the caller to the pool ("caller" is the allocator in this context) of the weth
+    vm.mockCall(weth, abi.encodeCall(IERC20.transfer, (InWethPool, _amountIn)), abi.encode(true));
+    vm.expectCall(weth, abi.encodeCall(IERC20.transfer, (InWethPool, _amountIn)));
+    
+    // Mock & expect the swap
+    vm.mockCall(InWethPool, abi.encodeCall(IUniswapV2Pair.swap, (_amount0, _amount1, caller, new bytes(0))), abi.encode());
+    vm.expectCall(InWethPool, abi.encodeCall(IUniswapV2Pair.swap, (_amount0, _amount1, caller, new bytes(0))));
+
+    // Mock & expect the new balance of tokenOut, after the swap
+    vm.mockCall(tokenOut, abi.encodeCall(IERC20.balanceOf, (address(_wrapper))), abi.encode(_amountOut));
+    vm.expectCall(tokenOut, abi.encodeCall(IERC20.balanceOf, (address(_wrapper))));
+
+    // Mock & expect the approval of the token out to the caller
+    vm.mockCall(tokenOut, abi.encodeCall(IERC20.approve, (caller, _amountOut)), abi.encode(true));
+    vm.expectCall(tokenOut, abi.encodeCall(IERC20.approve, (caller, _amountOut)));
+
+    vm.deal(caller, _amountIn);
+    vm.prank(caller);
+    _wrapper.swap{value: _amountIn}(_amountIn, JBTokens.ETH, tokenOut, _amountOut, InWethPool);
   }
 
-  function test_swap_transferTokenAndSwap_ethOut() public {
+  function test_swap_transferTokenAndSwap_ethOut(uint256 _amountIn, uint256 _amountOut) public {
+    uint256 _amount0;
+    uint256 _amount1;
+
+    bool _wethIsZero = weth < tokenIn;
+
+    // IUniswapV2Pair.swap only expects the amount of token out (token1 or 2) as calldata
+    if(_wethIsZero) {
+      (_amount0, _amount1) = (_amountOut, 0);
+    } else 
+      (_amount0, _amount1) = (0, _amountOut);
+    
+    // Mock & expect the transfer from the caller to the pool ("caller" is the allocator in this context) of the weth
+    vm.mockCall(tokenIn, abi.encodeCall(IERC20.transferFrom, (caller, InWethPool, _amountIn)), abi.encode(true));
+    vm.expectCall(tokenIn, abi.encodeCall(IERC20.transferFrom, (caller, InWethPool, _amountIn)));
+    
+    // Mock & expect the swap
+    vm.mockCall(InWethPool, abi.encodeCall(IUniswapV2Pair.swap, (_amount0, _amount1, caller, new bytes(0))), abi.encode());
+    vm.expectCall(InWethPool, abi.encodeCall(IUniswapV2Pair.swap, (_amount0, _amount1, caller, new bytes(0))));
+
+    // Mock & expect the new balance of wet, after the swap
+    vm.mockCall(weth, abi.encodeCall(IERC20.balanceOf, (address(_wrapper))), abi.encode(_amountOut));
+    vm.expectCall(weth, abi.encodeCall(IERC20.balanceOf, (address(_wrapper))));
+
+    // Mock & expect the approval of the weth to unwrap
+    vm.mockCall(weth, abi.encodeCall(IERC20.approve, (weth, _amountOut)), abi.encode(true));
+    vm.expectCall(weth, abi.encodeCall(IERC20.approve, (weth, _amountOut)));
+
+    // Mock and expect the weth unwrapping
+    vm.mockCall(weth, abi.encodeCall(IWETH.withdraw, (_amountOut)), abi.encode());
+    vm.expectCall(weth, abi.encodeCall(IWETH.withdraw, (_amountOut)));
+
+    vm.deal(payable(address(_wrapper)), _amountOut);
+    vm.prank(caller);
+    _wrapper.swap(_amountIn, tokenIn, JBTokens.ETH, _amountOut, InWethPool);
   }
 
 }

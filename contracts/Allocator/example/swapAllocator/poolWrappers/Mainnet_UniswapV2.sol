@@ -56,15 +56,21 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
     address _pool
   ) external payable returns (uint256 _amountReceived){
     if(_tokenIn == JBTokens.ETH) {
+      _amountIn = msg.value;
+
       IWETH(weth).deposit{value: _amountIn}();
+
       _tokenIn = weth;
+
+      // Optimistically transfer the weth to the uniswap pool
+      IERC20(weth).transfer(_pool, _amountIn);
     }
-    
-    // Optimistically transfer the tokenIn to the uniswap pool
-    IERC20(_tokenIn).transferFrom(msg.sender, _pool, _amountIn);
+    else   
+      // Optimistically transfer the tokenIn to the uniswap pool
+      IERC20(_tokenIn).transferFrom(msg.sender, _pool, _amountIn);
 
     // Assign the amount out,
-    (uint256 amount0Out, uint256 amount1Out) = _tokenIn < _tokenOut
+    (uint256 amount0Out, uint256 amount1Out) = _tokenIn < (_tokenOut == JBTokens.ETH ? weth : _tokenOut)
       ? (uint256(0), _amountOut)
       : (_amountOut, uint256(0));
 
@@ -76,6 +82,7 @@ contract Mainnet_UniswapV2 is IPoolWrapper {
 
     // Unwrap weth if eth is requested
     if(_tokenOut == JBTokens.ETH) {
+      IERC20(weth).approve(weth, _amountReceived);
       IWETH(weth).withdraw(_amountReceived);
       payable(msg.sender).transfer(_amountReceived);
     }
