@@ -32,6 +32,8 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
   event NewDex(IPoolWrapper[]);
   event RemoveDex(IPoolWrapper);
 
+  error SwapAllocator_emptyBeneficiary();
+
   /**
     @notice         All the dexes for this allocator token tuple
 
@@ -121,10 +123,12 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
     address _tokenOut = tokenOut;
     address _beneficiary = _data.split.beneficiary;
 
+    if(_beneficiary == address(0)) revert SwapAllocator_emptyBeneficiary();
+
     // No swap to perform -> transparently pass through the allocator
     if(_tokenIn == _tokenOut)
-      if(_tokenIn == JBTokens.ETH) payable(_beneficiary).transfer(msg.value); 
-      else IERC20(_tokenIn).transfer(_beneficiary, _amountIn);
+      if(_tokenIn == JBTokens.ETH) payable(_beneficiary).transfer(msg.value);
+      else IERC20(_tokenIn).transferFrom(msg.sender, _beneficiary, _amountIn);
 
     // Keep record of the best pool wrapper. The pool address is passed to avoid having
     // to find it again in the wrapper when swapping later on
@@ -163,7 +167,10 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
     // If a swap should be possible, try it
     if(_bestQuote != 0) {
       // If ERC20, approve the wrapper
-      if(_tokenIn != JBTokens.ETH) IERC20(_tokenIn).approve(address(_bestWrapper), _amountIn);
+      if(_tokenIn != JBTokens.ETH) {
+        IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
+        IERC20(_tokenIn).approve(address(_bestWrapper), _amountIn);
+      }
 
       // Call swap with the appropriate msg.value, avoid reverting by returning 0 if the swap reverts
       try _bestWrapper.swap{value: _tokenIn == JBTokens.ETH ? _amountIn : 0}(_amountIn, _tokenIn, _tokenOut, _bestQuote, _bestPool) returns(uint256 _received) {
@@ -182,7 +189,7 @@ contract SwapAllocator is ERC165, Ownable, IJBSplitAllocator {
     // If no swap was performed (no best quote or 0 received), send the tokenIn to the beneficiary
     else 
       if(_tokenIn == JBTokens.ETH) payable(_beneficiary).transfer(msg.value); 
-      else IERC20(_tokenIn).transfer(_beneficiary, _amountIn);
+      else IERC20(_tokenIn).transferFrom(msg.sender, _beneficiary, _amountIn);
 
     emit SwapAllocated({
       beneficiary: _beneficiary,
