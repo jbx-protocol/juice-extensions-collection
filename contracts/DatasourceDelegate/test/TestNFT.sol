@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.6;
+pragma solidity ^0.8.16;
 
 import './helpers/TestBaseWorkflow.sol';
 import '../examples/NFT/NFTPayDelegate.sol';
 import '../examples/NFT/NFTFundingCycleDataSource.sol';
 
-import '@jbx-protocol-v2/contracts/interfaces/IJBPayDelegate.sol';
-import '@jbx-protocol-v2/contracts/interfaces/IJBRedemptionDelegate.sol';
-import '@jbx-protocol-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBRedemptionDelegate.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleDataSource.sol';
 
 contract TestNFT is TestBaseWorkflow {
   JBController private _controller;
@@ -51,23 +51,28 @@ contract TestNFT is TestBaseWorkflow {
     });
 
     _metadata = JBFundingCycleMetadata({
-      global: JBGlobalFundingCycleMetadata({allowSetTerminals: false, allowSetController: false}),
-      reservedRate: 0,
-      redemptionRate: 10000, //100%
+      global: JBGlobalFundingCycleMetadata({
+        allowSetTerminals: false,
+        allowSetController: false,
+        pauseTransfers: false
+      }),
+      reservedRate: 0, //50%
+      redemptionRate: 10000, //50%
       ballotRedemptionRate: 0,
       pausePay: false,
       pauseDistributions: false,
       pauseRedeem: false,
       pauseBurn: false,
       allowMinting: false,
-      allowChangeToken: false,
       allowTerminalMigration: false,
       allowControllerMigration: false,
       holdFees: false,
+      preferClaimedTokenOverride: false,
       useTotalOverflowForRedemptions: false,
       useDataSourceForPay: true,
       useDataSourceForRedeem: true,
-      dataSource: address(dataSource)
+      dataSource: address(dataSource),
+      metadata: 0
     });
 
     _terminals.push(_terminal);
